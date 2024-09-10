@@ -45,7 +45,7 @@ void schedulerTest()
 
 void reportUtil()
 {
-    cout << "report-utl command recognized. Doing something.\n";
+    cout << "report-util command recognized. Doing something.\n";
 }
 
 void clear()
