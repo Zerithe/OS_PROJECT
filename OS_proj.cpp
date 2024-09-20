@@ -4,6 +4,9 @@
 #include <map>
 #include <functional>
 
+#include "ConsoleManager.h"
+
+
 using namespace std;
 
 struct functionHolder
@@ -71,7 +74,7 @@ int main()
     functionMap["scheduler-test"] = functionHolder{ schedulerTest };
     functionMap["report-util"] = functionHolder{ reportUtil };
     functionMap["clear"] = functionHolder{ clear };
-
+    ConsoleManager::initialize();
 
     headerPrint();
 
@@ -90,6 +93,7 @@ int main()
         }
     }
 
+    ConsoleManager::destroy();
 
     return 0;
 }
