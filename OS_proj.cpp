@@ -46,9 +46,14 @@ void schedulerTest()
     cout << "scheduler-test command recognized. Doing something.\n";
 }
 
+void schedulerStop()
+{
+    cout << "scheduler-stop command recognized. Doing something.\n";
+}
+
 void reportUtil()
 {
-    cout << "report-utl command recognized. Doing something.\n";
+    cout << "report-util command recognized. Doing something.\n";
 }
 
 void clear()
@@ -72,6 +77,7 @@ int main()
     functionMap["initialize"] = functionHolder{ initialize };
     functionMap["screen"] = functionHolder{ screen };
     functionMap["scheduler-test"] = functionHolder{ schedulerTest };
+    functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
     functionMap["report-util"] = functionHolder{ reportUtil };
     functionMap["clear"] = functionHolder{ clear };
     ConsoleManager::initialize();
