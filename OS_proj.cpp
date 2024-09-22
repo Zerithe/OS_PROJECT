@@ -63,13 +63,6 @@ void clear()
 }
 
 
-//
-//void commandHandler(string input, map<std::string, functionHolder>& functionMap)
-//{
-//    
-//}
-
-
 int main()
 {
     string input;
@@ -80,11 +73,12 @@ int main()
     functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
     functionMap["report-util"] = functionHolder{ reportUtil };
     functionMap["clear"] = functionHolder{ clear };
+
     ConsoleManager::initialize();
 
-    headerPrint();
+    //headerPrint();
 
-    while (input != "exit")
+    /*while (input != "exit")
     {
         cout << "enter a command: ";
         cin >> input;
@@ -97,6 +91,15 @@ int main()
         {
             cout << "Unkown command.\n";
         }
+    }*/
+
+    bool running = true;
+    while (running) 
+    {
+        ConsoleManager::getInstance()->process();
+        ConsoleManager::getInstance()->drawConsole();
+
+        running = ConsoleManager::getInstance()->isRunning();
     }
 
     ConsoleManager::destroy();

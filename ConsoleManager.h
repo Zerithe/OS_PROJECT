@@ -21,7 +21,7 @@ public:
 
 	void drawConsole() const;
 	void process() const;
-	void switchConsole(AConsole::String name);
+	void switchConsole(AConsole::String consoleName);
 	void returnToPreviousConsole();
 	void exitApplication();
 	bool isRunning() const;
