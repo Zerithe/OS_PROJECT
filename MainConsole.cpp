@@ -2,7 +2,7 @@
 #include <iostream>
 #include <Windows.h>
 
-
+using namespace std;
 
 MainConsole::MainConsole(String name) : AConsole(name)
 {
@@ -13,7 +13,7 @@ void MainConsole::onEnabled()
 {
     if (enabled == false)
     {
-        headerPrint();
+        clear();
     }
     enabled = true;
 
@@ -21,7 +21,20 @@ void MainConsole::onEnabled()
 
 void MainConsole::display()
 {
+    string input;
     onEnabled();
+    cout << "enter a command: ";
+    cin >> input;
+    if (input == "clear") {
+        clear();
+    }
+    else if (input == "exit") {
+        running = false;
+    }
+    else {
+        cout << "Command not found";
+    }
+
 }
 
 void MainConsole::process()
@@ -31,22 +44,27 @@ void MainConsole::process()
 
 void MainConsole::clear()
 {
-    std::cout << "\033[2J\033[1;1H";
+    cout << "\033[2J\033[1;1H";
     headerPrint();
 }
 
 void MainConsole::headerPrint()
 {
-    std::cout << "   ___________ ____  ____  _____________  __\n";
-    std::cout << "  / ____/ ___// __ \\/ __ \\/ ____/ ___/\\ \\/ /\n";
-    std::cout << " / /    \\__ \\/ / / / /_/ / __/  \\__ \\  \\  /\n";
-    std::cout << "/ /___ ___/ / /_/ / ____/ /___ ___/ /  / /\n";
-    std::cout << "\\____//____/\\____/_/   /_____//____/  /_/\n";
-    std::cout << "\n";
+    cout << "   ___________ ____  ____  _____________  __\n";
+    cout << "  / ____/ ___// __ \\/ __ \\/ ____/ ___/\\ \\/ /\n";
+    cout << " / /    \\__ \\/ / / / /_/ / __/  \\__ \\  \\  /\n";
+    cout << "/ /___ ___/ / /_/ / ____/ /___ ___/ /  / /\n";
+    cout << "\\____//____/\\____/_/   /_____//____/  /_/\n";
+    cout << "\n";
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-    std::cout << "Hello, Welcome to CSOPESY commandline!\n";
+    cout << "Hello, Welcome to CSOPESY commandline!\n";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
-    std::cout << "Type 'exit' to quit, 'clear' to clear the screen \n";
+    cout << "Type 'exit' to quit, 'clear' to clear the screen \n";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+bool MainConsole::isRunning()
+{
+    return running;
 }

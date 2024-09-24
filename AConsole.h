@@ -12,6 +12,7 @@ public:
 	virtual void onEnabled() = 0;
 	virtual void display() = 0;
 	virtual void process() = 0;
+	virtual bool isRunning() = 0;
 
 	String name;
 	friend class ConsoleManager;

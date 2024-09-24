@@ -9,11 +9,13 @@ public:
 	void onEnabled() override;
 	void display() override;
 	void process() override;
+	bool isRunning() override;
 
 	void clear();
 
 	void headerPrint();
 private:
 	bool enabled = false;
+	bool running = true;
 };
 

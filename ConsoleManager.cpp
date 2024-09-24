@@ -47,7 +47,9 @@ void ConsoleManager::destroy()
 void ConsoleManager::drawConsole() const
 {
 	this->currentConsole->display();
-	
+	if (currentConsole == consoleTable.at(MAIN_CONSOLE) && !currentConsole->isRunning()) {
+		const_cast<ConsoleManager*>(this)->exitApplication();
+	}
 }
 
 void ConsoleManager::process() const
@@ -57,15 +59,20 @@ void ConsoleManager::process() const
 
 void ConsoleManager::switchConsole(AConsole::String consoleName)
 {
+	this->previousConsole = this->currentConsole;
 	this->currentConsole = consoleTable[consoleName];
+	this->currentConsole->onEnabled();
 }
 
 void ConsoleManager::returnToPreviousConsole()
 {
+	this->currentConsole = this->previousConsole;
+	this->previousConsole = nullptr;
 }
 
 void ConsoleManager::exitApplication()
 {
+	this->running = false;
 }
 
 bool ConsoleManager::isRunning() const
