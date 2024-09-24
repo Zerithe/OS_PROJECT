@@ -12,8 +12,9 @@ public:
 
 	void clear();
 
-	void headerPrint();
+	
 private:
+	void headerPrint();
 	bool enabled = false;
 };
 

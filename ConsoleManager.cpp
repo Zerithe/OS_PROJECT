@@ -57,11 +57,31 @@ void ConsoleManager::process() const
 
 void ConsoleManager::switchConsole(AConsole::String consoleName)
 {
-	this->currentConsole = consoleTable[consoleName];
+	if(this->consoleTable.contains(consoleName))
+	{
+		std::cout << "\033[2J\033[1;1H";
+		this->previousConsole = this->currentConsole;
+		this->currentConsole = this->consoleTable[consoleName];
+		this->currentConsole->onEnabled();
+	}
+	else
+	{
+		std::cout << "Console not found" << std::endl;
+	}
 }
 
 void ConsoleManager::returnToPreviousConsole()
 {
+	if (this->previousConsole != nullptr)
+	{
+		std::cout << "\033[2J\033[1;1H";
+		this->currentConsole = this->previousConsole;
+		this->previousConsole = nullptr;
+	}
+	else
+	{
+		std::cout << "No previous console" << std::endl;
+	}
 }
 
 void ConsoleManager::exitApplication()

@@ -130,12 +130,16 @@
   <ItemGroup>
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="OS_proj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="MainConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

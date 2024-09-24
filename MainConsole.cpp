@@ -1,6 +1,8 @@
 #include "MainConsole.h"
 #include <iostream>
 #include <Windows.h>
+#include <conio.h>
+#include "KeyboardHandler.h"
 
 
 
@@ -26,7 +28,24 @@ void MainConsole::display()
 
 void MainConsole::process()
 {
-    
+	KeyboardHandler keyboardHandler;
+    if (enabled) {
+        if (_kbhit())
+        {
+            char key = _getch();
+            char input[256];
+           
+            if (GetAsyncKeyState(key) & 0x8000)
+            {
+                keyboardHandler.OnKeyDown(key);
+            }
+            else
+            {
+                keyboardHandler.OnKeyUp(key);
+            }
+
+        }
+    }
 }
 
 void MainConsole::clear()

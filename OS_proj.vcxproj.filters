@@ -17,25 +17,37 @@
     <ClCompile Include="OS_proj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AConsole.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ConsoleManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainConsole.cpp">
       <Filter>Source Files\Console States</Filter>
     </ClCompile>
+    <ClCompile Include="AConsole.cpp">
+      <Filter>Source Files\Console States</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AConsole.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ConsoleManager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="MainConsole.h">
       <Filter>Source Files\Console States</Filter>
+    </ClInclude>
+    <ClInclude Include="AConsole.h">
+      <Filter>Source Files\Console States</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardHandler.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
