@@ -134,6 +134,7 @@
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="OS_proj.cpp" />
+    <ClCompile Include="ScreenConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
@@ -141,6 +142,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="ScreenConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

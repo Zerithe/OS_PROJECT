@@ -32,6 +32,9 @@
     <ClCompile Include="KeyboardHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenConsole.cpp">
+      <Filter>Source Files\Console States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleManager.h">
@@ -48,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="KeyboardHandler.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenConsole.h">
+      <Filter>Source Files\Console States</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
