@@ -9,6 +9,7 @@
 const AConsole::String MAIN_CONSOLE = "MAIN_CONSOLE";
 const AConsole::String SCHEDULING_CONSOLE = "SCHEDULING_CONSOLE";
 const AConsole::String TEST_CONSOLE = "TEST_CONSOLE";
+const AConsole::String SCREEN_CONSOLE = "SCREEN_CONSOLE";
 
 class ConsoleManager
 {

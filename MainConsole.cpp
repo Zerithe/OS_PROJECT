@@ -21,18 +21,42 @@ void MainConsole::onEnabled()
 
 void MainConsole::display()
 {
-    string input;
+    string command, option, name;
     onEnabled();
     cout << "enter a command: ";
-    cin >> input;
-    if (input == "clear") {
+    getline(cin, command);
+    if (command == "clear") {
         clear();
     }
-    else if (input == "exit") {
-        running = false;
+    else if (command == "exit") {
+        exited = true;
+    }
+    else if (command.substr(0, 9) == "screen -r") {
+        name = command.substr(10);
+
+        if (!name.empty())
+        {
+            cout << "Screen name: " << name << endl;
+        }
+        else
+        {
+            cout << "Invalid command" << endl;
+        }
+    }
+    else if (command.substr(0, 9) == "screen -s") {
+        name = command.substr(10);
+
+        if (!name.empty())
+        {
+            cout << "Screen name: " << name << endl;
+        }
+        else
+        {
+            cout << "Invalid command" << endl;
+        }
     }
     else {
-        cout << "Command not found";
+        cout << "Command not found" << endl;
     }
 
 }
@@ -64,7 +88,7 @@ void MainConsole::headerPrint()
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
 
-bool MainConsole::isRunning()
+bool MainConsole::hasExited()
 {
-    return running;
+    return exited;
 }

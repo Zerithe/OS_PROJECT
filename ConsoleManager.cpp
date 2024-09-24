@@ -1,5 +1,6 @@
 #include "ConsoleManager.h"
 #include "MainConsole.h"
+#include "ScreenConsole.h"
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 AConsole::String input;
@@ -11,8 +12,10 @@ ConsoleManager::ConsoleManager()
 	this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>("MAIN_CONSOLE");
+	const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>("SCREEN_CONSOLE");
 
 	this->consoleTable[MAIN_CONSOLE] = mainConsole;
+	this->consoleTable[SCREEN_CONSOLE] = screenConsole;
 
 	this->switchConsole(MAIN_CONSOLE);
 
@@ -47,7 +50,7 @@ void ConsoleManager::destroy()
 void ConsoleManager::drawConsole() const
 {
 	this->currentConsole->display();
-	if (currentConsole == consoleTable.at(MAIN_CONSOLE) && !currentConsole->isRunning()) {
+	if (currentConsole == consoleTable.at(MAIN_CONSOLE) && currentConsole->hasExited()) {
 		const_cast<ConsoleManager*>(this)->exitApplication();
 	}
 }
