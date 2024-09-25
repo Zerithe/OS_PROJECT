@@ -12,11 +12,15 @@ public:
 	bool hasExited() override;
 
 	void clear();
+	AConsole::String getStringToRegister();
+	AConsole::String getStringToRead();
 
 	
 private:
 	void headerPrint();
 	bool enabled = false;
 	bool exited = false;
+	AConsole::String stringToRegister = "";
+	AConsole::String stringToRead = "";
 };
 

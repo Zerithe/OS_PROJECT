@@ -8,5 +8,5 @@ AConsole::AConsole(String name)
 
 AConsole::String AConsole::getName()
 {
-	return String();
+	return this->name;
 }

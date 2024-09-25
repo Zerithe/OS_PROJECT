@@ -23,6 +23,8 @@ void MainConsole::onEnabled()
 
 void MainConsole::display()
 {
+    this->stringToRead.clear();
+    this->stringToRegister.clear();
     string command, option, name;
     onEnabled();
     cout << "enter a command: ";
@@ -38,7 +40,7 @@ void MainConsole::display()
 
         if (!name.empty())
         {
-            cout << "Screen name: " << name << endl;
+            this->stringToRead = name;
         }
         else
         {
@@ -50,7 +52,7 @@ void MainConsole::display()
 
         if (!name.empty())
         {
-            cout << "Screen name: " << name << endl;
+            this->stringToRegister = name;
         }
         else
         {
@@ -89,6 +91,16 @@ void MainConsole::clear()
 {
     cout << "\033[2J\033[1;1H";
     headerPrint();
+}
+
+AConsole::String MainConsole::getStringToRegister()
+{
+    return this->stringToRegister;
+}
+
+AConsole::String MainConsole::getStringToRead()
+{
+    return this->stringToRead;
 }
 
 void MainConsole::headerPrint()

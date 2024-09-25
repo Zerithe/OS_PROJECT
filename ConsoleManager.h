@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <unordered_map>
 #include <iostream>
+#include "ScreenConsole.h"
 
 
 const AConsole::String MAIN_CONSOLE = "MAIN_CONSOLE";
@@ -25,6 +26,7 @@ public:
 	void switchConsole(AConsole::String consoleName);
 	void returnToPreviousConsole();
 	void exitApplication();
+	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
 	bool isRunning() const;
 
 	HANDLE getConsole() const;

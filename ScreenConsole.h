@@ -16,5 +16,8 @@ private:
 
 	bool enabled = false;
 	bool exited = false;
+	String creationTime;       // String to hold the creation date and time
+
+	void initializeCreationTime();
 };
 

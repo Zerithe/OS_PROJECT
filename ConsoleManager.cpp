@@ -50,8 +50,23 @@ void ConsoleManager::destroy()
 void ConsoleManager::drawConsole() const
 {
 	this->currentConsole->display();
-	if (currentConsole == consoleTable.at(MAIN_CONSOLE) && currentConsole->hasExited()) {
-		const_cast<ConsoleManager*>(this)->exitApplication();
+	if (currentConsole == consoleTable.at(MAIN_CONSOLE)) {
+		std::shared_ptr<MainConsole> mainConsole = std::dynamic_pointer_cast<MainConsole>(currentConsole);
+		if (mainConsole->hasExited()) {
+			const_cast<ConsoleManager*>(this)->exitApplication();
+		}
+		if (!mainConsole->getStringToRegister().empty()) {
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister());
+			const_cast<ConsoleManager*>(this)->registerConsole(screenConsole);
+		}
+		if (!mainConsole->getStringToRead().empty()) {
+			const_cast<ConsoleManager*>(this)->switchConsole(mainConsole->getStringToRead());
+		}
+	}
+	else {
+		if (this->currentConsole->hasExited()) {
+			const_cast<ConsoleManager*>(this)->returnToPreviousConsole();
+		}
 	}
 }
 
@@ -93,6 +108,17 @@ void ConsoleManager::returnToPreviousConsole()
 void ConsoleManager::exitApplication()
 {
 	this->running = false;
+}
+
+void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
+{
+	if (this->consoleTable.contains(screenRef->getName()))
+	{
+		std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
+		return;
+	}
+	this->consoleTable[screenRef->getName()] = screenRef;
+	this->switchConsole(screenRef->getName());
 }
 
 bool ConsoleManager::isRunning() const
