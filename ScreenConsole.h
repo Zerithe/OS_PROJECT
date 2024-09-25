@@ -12,6 +12,8 @@ public:
 	bool hasExited() override;
 
 private:
+	void printProcessData() const;
+
 	bool enabled = false;
 	bool exited = false;
 };
