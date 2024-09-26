@@ -19,6 +19,7 @@ void ScreenConsole::onEnabled()
     if (enabled == false)
     {
         cout << "Screen Layout" << endl;
+        printProcessData();
     }
     enabled = true;
 
@@ -26,13 +27,17 @@ void ScreenConsole::onEnabled()
 
 void ScreenConsole::display()
 {
-    printProcessData();
     string command, option, name;
     onEnabled();
     cout << "root:\> ";
     getline(cin, command);
     if (command == "exit") {
+		enabled = false;
         exited = true;
+    }
+    else if (command == "process-smi")
+    {
+        printProcessData();
     }
     else
     {
