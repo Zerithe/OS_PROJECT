@@ -27,6 +27,7 @@ void ScreenConsole::onEnabled()
 
 void ScreenConsole::display()
 {
+    exited = false;
     string command, option, name;
     onEnabled();
     cout << "root:\> ";
