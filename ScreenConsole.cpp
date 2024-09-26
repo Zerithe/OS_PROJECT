@@ -18,7 +18,7 @@ void ScreenConsole::onEnabled()
 {
     if (enabled == false)
     {
-        cout << "Screen Layout" << endl;
+        //cout << "Screen Layout" << endl; temporarily commented to make display similar after using cls
         printProcessData();
     }
     enabled = true;
@@ -40,6 +40,11 @@ void ScreenConsole::display()
     if (command == "exit") {
         offEnabled();
         exited = true;
+    }
+    else if (command == "clear" || command == "cls")
+    {
+        cout << "\033[2J\033[1;1H";
+        printProcessData();
     }
     else if (command == "process-smi")
     {

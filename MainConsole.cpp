@@ -34,7 +34,7 @@ void MainConsole::display()
     onEnabled();
     cout << "enter a command: ";
     getline(cin, command);
-    if (command == "clear") {
+    if (command == "clear" || command == "cls") {
         clear();
     }
     else if (command == "exit") {
