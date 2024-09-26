@@ -29,10 +29,14 @@ void ScreenConsole::display()
     printProcessData();
     string command, option, name;
     onEnabled();
-    cout << "root:\>";
+    cout << "root:\> ";
     getline(cin, command);
     if (command == "exit") {
         exited = true;
+    }
+    else
+    {
+		cout << "Invalid command" << endl;
     }
 }
 
@@ -68,7 +72,7 @@ void ScreenConsole::printProcessData() const
 {
     cout << "Process Name: " << this->name << endl;
     cout << "0/50" << endl;
-    cout << this->creationTime << endl;
+    cout << "Creation time: " << this->creationTime << endl;
 }
 
 void ScreenConsole::initializeCreationTime()
