@@ -25,6 +25,11 @@ void ScreenConsole::onEnabled()
 
 }
 
+void ScreenConsole::offEnabled()
+{
+    this->enabled = false;
+}
+
 void ScreenConsole::display()
 {
     exited = false;
@@ -33,7 +38,7 @@ void ScreenConsole::display()
     cout << "root:\> ";
     getline(cin, command);
     if (command == "exit") {
-		enabled = false;
+        offEnabled();
         exited = true;
     }
     else if (command == "process-smi")

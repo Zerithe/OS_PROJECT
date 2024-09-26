@@ -81,14 +81,16 @@ void ConsoleManager::switchConsole(AConsole::String consoleName)
 	{
 		std::cout << "\033[2J\033[1;1H";
 		this->previousConsole = this->currentConsole;
+		if (this->previousConsole != nullptr)
+		{
+			this->previousConsole->offEnabled();
+		}
 		this->currentConsole = this->consoleTable[consoleName];
-		this->currentConsole->onEnabled();
 	}
 	else
 	{
 		std::cout << "Console not found" << std::endl;
 	}
-	this->currentConsole->onEnabled();
 }
 
 void ConsoleManager::returnToPreviousConsole()

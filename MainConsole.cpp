@@ -21,6 +21,11 @@ void MainConsole::onEnabled()
 
 }
 
+void MainConsole::offEnabled()
+{
+    this->enabled = false;
+}
+
 void MainConsole::display()
 {
     this->stringToRead.clear();

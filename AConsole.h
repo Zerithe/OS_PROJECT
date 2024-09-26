@@ -10,6 +10,7 @@ public:
 
 	String getName();
 	virtual void onEnabled() = 0;
+	virtual void offEnabled() = 0;
 	virtual void display() = 0;
 	virtual void process() = 0;
 	virtual bool hasExited() = 0;

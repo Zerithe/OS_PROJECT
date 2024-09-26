@@ -7,6 +7,7 @@ public:
 	ScreenConsole(String name);
 
 	void onEnabled() override;
+	void offEnabled() override;
 	void display() override;
 	void process() override;
 	bool hasExited() override;
