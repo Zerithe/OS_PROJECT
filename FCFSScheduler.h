@@ -16,6 +16,7 @@ public:
 	void addCPUCore(std::shared_ptr<CPUCore> cpuCore);
 	void addProcess(std::shared_ptr<Process> process);
 	void showListOfProcesses();
+	void stop();
 	static FCFSScheduler* getInstance();
 	static void initialize();
 	static void destroy();
@@ -29,5 +30,6 @@ private:
 	ReadyQueue readyQueue;
 	coreList cores;
 	FinishedList finishedList;
+	bool running = true;
 };
 

@@ -96,11 +96,6 @@ int main()
     std::thread core3Thread(&CPUCore::runCPU, core3);
     std::thread core4Thread(&CPUCore::runCPU, core4);
 
-    fcfsThread.detach();
-    core1Thread.detach();
-    core2Thread.detach();
-    core3Thread.detach();
-    core4Thread.detach();
     //headerPrint();
 
     /*while (input != "exit")
@@ -129,6 +124,18 @@ int main()
             FCFSScheduler::getInstance()->showListOfProcesses();
         running = ConsoleManager::getInstance()->isRunning();
     }
+
+    FCFSScheduler::getInstance()->stop();
+    core1->stop();
+    core2->stop();
+    core3->stop();
+    core4->stop();
+
+    fcfsThread.join();
+    core1Thread.join();
+    core2Thread.join();
+    core3Thread.join();
+    core4Thread.join();
 
     ConsoleManager::destroy();
     FCFSScheduler::destroy();

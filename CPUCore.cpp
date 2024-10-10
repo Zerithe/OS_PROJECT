@@ -9,7 +9,7 @@ CPUCore::CPUCore(int id)
 
 void CPUCore::runCPU()
 {
-	while (true)
+	while (this->running)
 	{
 		if (this->process != nullptr) {
 			this->process->executeCurrentCommand();
@@ -55,6 +55,11 @@ void CPUCore::deallocateCPU()
 {
 	this->process = nullptr;
 	this->finishedProcess = false;
+}
+
+void CPUCore::stop()
+{
+	this->running = false;
 }
 
 

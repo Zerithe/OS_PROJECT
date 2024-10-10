@@ -15,9 +15,11 @@ public:
 	int getId();
 	bool getIsFinished();
 	void deallocateCPU();
+	void stop();
 private:
 	int id;
 	std::shared_ptr<Process> process = nullptr;
 	bool finishedProcess = false;
+	bool running = true;
 };
 

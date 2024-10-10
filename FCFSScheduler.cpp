@@ -14,7 +14,7 @@ FCFSScheduler::FCFSScheduler()
 
 void FCFSScheduler::runFCFS()
 {
-	while (true) {
+	while (this->running) {
 		for (std::shared_ptr<CPUCore> core: this->cores) {
 			if (!core->containsProcess() && !this->readyQueue.empty()) {
 				core->registerProcess(this->readyQueue.front());
@@ -55,6 +55,11 @@ void FCFSScheduler::showListOfProcesses()
 		std::cout << process->getName() << " " << process->getTimeFinished() << " Finished " << process->getTotalInstructions() << " / " << process->getTotalInstructions() << std::endl;
 	}
 	
+}
+
+void FCFSScheduler::stop()
+{
+	this->running = false;
 }
 
 FCFSScheduler* FCFSScheduler::getInstance()
