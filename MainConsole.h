@@ -19,6 +19,12 @@ public:
 	
 private:
 	void headerPrint();
+	int getConsoleWidth();
+	void displaySmi();
+	AConsole::String getCurrentDateTime();
+	AConsole::String truncateString(const AConsole::String& str, size_t width);
+	AConsole::String adjustStringToWidth(const AConsole::String& str, size_t width);
+
 	bool enabled = false;
 	bool exited = false;
 	AConsole::String stringToRegister = "";

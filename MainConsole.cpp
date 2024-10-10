@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <conio.h>
 #include "KeyboardHandler.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -39,6 +40,9 @@ void MainConsole::display()
     }
     else if (command == "exit") {
         exited = true;
+    }
+    else if (command == "nvidia-smi") {
+		displaySmi();
     }
     else if (command.substr(0, 9) == "screen -r") {
         name = command.substr(10);
@@ -124,7 +128,134 @@ void MainConsole::headerPrint()
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
 
+int MainConsole::getConsoleWidth()
+{
+	HANDLE hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+
+	if (GetConsoleScreenBufferInfo(hconsole, &consoleInfo))
+	{
+		return consoleInfo.srWindow.Right - consoleInfo.srWindow.Left + 1;
+	}
+	else
+	{
+		return 80;
+	}
+}
+
+void MainConsole::displaySmi()
+{
+	int consoleWidth = getConsoleWidth();
+    int halfConsoleWidth = consoleWidth / 1.5;
+
+    //header
+    AConsole::String dateTime = getCurrentDateTime();
+    int headerWidth = halfConsoleWidth - 2;
+    AConsole::String nvidiaSmiHeader = " NVIDIA-SMI 511.69       Driver Version: 511.69       CUDA Version: 11.6 ";
+    int colWidth = headerWidth / 3;
+
+    std::cout << dateTime << "\n";
+    std::cout << "+" << AConsole::String(headerWidth, '-') << "--+\n";
+    std::cout << "|" << std::setw((headerWidth + nvidiaSmiHeader.size()) / 2) << nvidiaSmiHeader << std::setw((headerWidth - nvidiaSmiHeader.size()) / 2) << "     |\n";
+    std::cout << "+" << std::string(colWidth, '-') << "+" << std::string(colWidth, '-') << "+" << std::string(colWidth, '-') << "+\n";
+    std::cout << "| " << adjustStringToWidth("GPU  Name   TCC/WDDM", colWidth - 2)
+        << " | " << adjustStringToWidth("Bus-Id        Disp.A", colWidth - 2)
+        << " | " << adjustStringToWidth("Volatile Uncorr. ECC", colWidth - 2) << " |\n";
+    std::cout << "| " << adjustStringToWidth("Fan  Temp  Perf  Pwr:Usage/Cap", colWidth - 2)
+        << " | " << adjustStringToWidth("Memory-Usage", colWidth - 2)
+        << " | " << adjustStringToWidth("GPU-Util  Compute M.", colWidth - 2) << " |\n";
+    std::cout << "| " << adjustStringToWidth("", colWidth - 2)
+        << " | " << adjustStringToWidth("", colWidth - 2)
+        << " | " << adjustStringToWidth("MIG M.", colWidth - 2) << " |\n";
+    std::cout << "+" << std::string(colWidth, '=') << "+" << std::string(colWidth, '=') << "+" << std::string(colWidth, '=') << "+\n";
+
+
+    //GPU info
+    std::cout << "| " << adjustStringToWidth("0  NVIDIA GeForce GTX 1080", colWidth - 2)
+        << " | " << adjustStringToWidth("00000000:01:00.0  Off", colWidth - 2)
+        << " | " << adjustStringToWidth("N/A", colWidth - 2) << " |\n";
+    std::cout << "| " << adjustStringToWidth("N/A   52C    P8    3W / N/A", colWidth - 2)
+        << " | " << adjustStringToWidth("0MiB / 2048MiB", colWidth - 2)
+        << " | " << adjustStringToWidth("0%       Default", colWidth - 2) << " |\n";
+    std::cout << "+" << std::string(colWidth, '-') << "+" << std::string(colWidth, '-') << "+" << std::string(colWidth, '-') << "+\n";
+    std::cout << endl;
+    std::cout << endl;
+
+    //process
+    const int fixedGPUColWidth = 6;
+    const int fixedPIDColWidth = 6;
+    const int fixedTypeColWidth = 5;
+    const int fixedMemUsageColWidth = 8;
+    AConsole::String processes[5] =
+    {
+        "C:\\User\\Chrome\\Binaries\\Win64\\Chrome.exe",
+        "F:\\Applications\\Discord\\Bin\\Discord.exe",
+        "C:\\chess.exe",
+        "D:\\reallyrealllyveryyylongprocessname.exe.bin.cpp.java.py.sys",
+        "J:\\Games\\.minecraft\\minecraft.exe"
+    };
+    int pids[5] = {1234, 2345, 3456, 4567, 5678};
+    AConsole::String memoryUsage[5] = {"N/A", "N/A", "N/A", "200MiB", "512MiB"};
+	int dynamicColWidth = halfConsoleWidth - fixedGPUColWidth - fixedPIDColWidth - fixedTypeColWidth - fixedMemUsageColWidth - 17;
+    if (dynamicColWidth < 0)
+    {
+		dynamicColWidth = 0;
+    }
+
+    std::cout << "+" << std::string(halfConsoleWidth - 2, '-') << "--+\n";
+	std::cout << "|" << adjustStringToWidth("Processes:", halfConsoleWidth - 2) << "  |\n";
+    std::cout << "+" << std::string(halfConsoleWidth - 2, '-') << "--+\n";
+    std::cout << "|" << adjustStringToWidth(" GPU    GI     CI    PID   Type Process Name                         GPU Memory", halfConsoleWidth) <<"|\n";
+    std::cout << "|" << adjustStringToWidth("        ID     ID                                                    Usage", halfConsoleWidth) <<"|\n";
+    std::cout << "+" << std::string(halfConsoleWidth - 2, '=') << "==+\n";
+
+
+    for (int i = 0; i < 5; i++)
+    {
+		AConsole::String truncatedProcessName = adjustStringToWidth(processes[i], dynamicColWidth);
+        std::cout << "| " << " 0 "
+            << " " << std::setw(fixedGPUColWidth) << "N/A"
+            << " " << std::setw(fixedGPUColWidth) << "N/A"
+            << " " << std::setw(fixedPIDColWidth) << pids[i]
+            << " " << std::setw(fixedTypeColWidth) << "C+G"
+            << " " << truncateString(processes[i], dynamicColWidth)
+            << " " << std::setw(fixedMemUsageColWidth) << memoryUsage[i]
+            << " |\n";
+
+    }
+    std::cout << "+" << std::string(halfConsoleWidth - 2, '-') << "--+\n";
+}
+
+AConsole::String MainConsole::getCurrentDateTime()
+{
+    time_t currTime = time(0);
+    char buffer[80];
+    struct tm timeinfo;
+    localtime_s(&timeinfo, &currTime);
+    strftime(buffer, sizeof(buffer), "%a %b %d %H:%M:%S %Y", &timeinfo);
+    return AConsole::String(buffer);
+
+}
+
+AConsole::String MainConsole::truncateString(const AConsole::String& str, size_t width)
+{
+    if (str.size() > width) 
+    {
+        return "..." + str.substr(str.size() - (width - 3));
+    }
+    return str + std::string(width - str.size(), ' ');
+}
+
+AConsole::String MainConsole::adjustStringToWidth(const AConsole::String& str, size_t width)
+{
+    if (str.size() > width) {
+        return str.substr(0, width - 3) + "...";  
+    }
+    return str + std::string(width - str.size(), ' ');
+}
+
 bool MainConsole::hasExited()
 {
     return exited;
 }
+

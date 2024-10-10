@@ -133,6 +133,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="MarqueeConsole.cpp" />
     <ClCompile Include="OS_proj.cpp" />
     <ClCompile Include="ScreenConsole.cpp" />
   </ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="MarqueeConsole.h" />
     <ClInclude Include="ScreenConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
