@@ -3,8 +3,11 @@
 #include <string>
 #include <map>
 #include <functional>
+#include <thread>
 
 #include "ConsoleManager.h"
+#include "FCFSScheduler.h"
+#include "CPUCore.h"
 
 
 using namespace std;
@@ -66,16 +69,38 @@ void clear()
 int main()
 {
     string input;
-    map<string, functionHolder> functionMap;
-    functionMap["initialize"] = functionHolder{ initialize };
-    functionMap["screen"] = functionHolder{ screen };
-    functionMap["scheduler-test"] = functionHolder{ schedulerTest };
-    functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
-    functionMap["report-util"] = functionHolder{ reportUtil };
-    functionMap["clear"] = functionHolder{ clear };
+    //map<string, functionHolder> functionMap;
+    //functionMap["initialize"] = functionHolder{ initialize };
+    //functionMap["screen"] = functionHolder{ screen };
+    //functionMap["scheduler-test"] = functionHolder{ schedulerTest };
+    //functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
+    //functionMap["report-util"] = functionHolder{ reportUtil };
+    //functionMap["clear"] = functionHolder{ clear };
 
     ConsoleManager::initialize();
+    FCFSScheduler::initialize();
 
+    std::shared_ptr<CPUCore> core1 = std::make_shared<CPUCore>(0);
+    std::shared_ptr<CPUCore> core2 = std::make_shared<CPUCore>(1);
+    std::shared_ptr<CPUCore> core3 = std::make_shared<CPUCore>(2);
+    std::shared_ptr<CPUCore> core4 = std::make_shared<CPUCore>(3);
+
+    FCFSScheduler::getInstance()->addCPUCore(core1);
+    FCFSScheduler::getInstance()->addCPUCore(core2);
+    FCFSScheduler::getInstance()->addCPUCore(core3);
+    FCFSScheduler::getInstance()->addCPUCore(core4);
+
+    std::thread fcfsThread(&FCFSScheduler::runFCFS, FCFSScheduler::getInstance());
+    std::thread core1Thread(&CPUCore::runCPU, core1);
+    std::thread core2Thread(&CPUCore::runCPU, core2);
+    std::thread core3Thread(&CPUCore::runCPU, core3);
+    std::thread core4Thread(&CPUCore::runCPU, core4);
+
+    fcfsThread.detach();
+    core1Thread.detach();
+    core2Thread.detach();
+    core3Thread.detach();
+    core4Thread.detach();
     //headerPrint();
 
     /*while (input != "exit")
@@ -98,12 +123,15 @@ int main()
     {
         ConsoleManager::getInstance()->process();
         ConsoleManager::getInstance()->drawConsole();
-
+        if (ConsoleManager::getInstance()->getCreatedProcess() != nullptr)
+            FCFSScheduler::getInstance()->addProcess(ConsoleManager::getInstance()->getCreatedProcess());
+        if (ConsoleManager::getInstance()->getShowListOfProcesses())
+            FCFSScheduler::getInstance()->showListOfProcesses();
         running = ConsoleManager::getInstance()->isRunning();
     }
 
     ConsoleManager::destroy();
-
+    FCFSScheduler::destroy();
     return 0;
 }
 

@@ -15,12 +15,14 @@ public:
 	void clear();
 	AConsole::String getStringToRegister();
 	AConsole::String getStringToRead();
+	bool getShowListOfProcesses();
 
 	
 private:
 	void headerPrint();
 	bool enabled = false;
 	bool exited = false;
+	bool showListOfProcesses = false;
 	AConsole::String stringToRegister = "";
 	AConsole::String stringToRead = "";
 };

@@ -6,11 +6,21 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
+#include <random>
 using namespace std;
 
 ScreenConsole::ScreenConsole(String name) : AConsole(name)
 {
     this->name = name;
+    std::random_device rd;  // Obtain a random seed from hardware
+    std::mt19937 gen(rd()); // Seed the generator
+
+    // Define the range of random numbers (e.g., 1 to 100)
+    std::uniform_int_distribution<> distr(1, 100);
+
+    // Generate a random integer
+    int random_number = distr(gen);
+    this->linkedProcess = std::make_shared<Process>(random_number, name);
     initializeCreationTime();
 }
 
@@ -84,10 +94,15 @@ bool ScreenConsole::hasExited()
     return exited;
 }
 
+std::shared_ptr<Process> ScreenConsole::getProcess()
+{
+    return this->linkedProcess;
+}
+
 void ScreenConsole::printProcessData() const
 {
     cout << "Process Name: " << this->name << endl;
-    cout << "0/50" << endl;
+    cout << this->linkedProcess->getCommandCounter() << "/" << this->linkedProcess->getTotalInstructions() << endl;
     cout << "Creation time: " << this->creationTime << endl;
 }
 

@@ -8,7 +8,7 @@ public:
 	AConsole(String name);
 	~AConsole() = default;
 
-	String getName();
+	String getName() const;
 	virtual void onEnabled() = 0;
 	virtual void offEnabled() = 0;
 	virtual void display() = 0;

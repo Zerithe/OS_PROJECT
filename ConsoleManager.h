@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include "ScreenConsole.h"
+#include "Process.h"
 
 
 const AConsole::String MAIN_CONSOLE = "MAIN_CONSOLE";
@@ -21,13 +22,15 @@ public:
 	static void initialize();
 	static void destroy();
 
-	void drawConsole() const;
+	void drawConsole();
 	void process() const;
 	void switchConsole(AConsole::String consoleName);
 	void returnToPreviousConsole();
 	void exitApplication();
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
 	bool isRunning() const;
+	std::shared_ptr<Process> getCreatedProcess();
+	bool getShowListOfProcesses();
 
 	HANDLE getConsole() const;
 
@@ -46,5 +49,7 @@ private:
 
 	HANDLE consoleHandle;
 	bool running = true;
+	std::shared_ptr<Process> createdProcess = nullptr;
+	bool showListOfProcesses = false;
 };
 

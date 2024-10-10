@@ -30,6 +30,7 @@ void MainConsole::display()
 {
     this->stringToRead.clear();
     this->stringToRegister.clear();
+    this->showListOfProcesses = false;
     string command, option, name;
     onEnabled();
     cout << "enter a command: ";
@@ -39,6 +40,9 @@ void MainConsole::display()
     }
     else if (command == "exit") {
         exited = true;
+    }
+    else if (command == "screen -ls") {
+        this->showListOfProcesses = true;
     }
     else if (command.substr(0, 9) == "screen -r") {
         name = command.substr(10);
@@ -106,6 +110,11 @@ AConsole::String MainConsole::getStringToRegister()
 AConsole::String MainConsole::getStringToRead()
 {
     return this->stringToRead;
+}
+
+bool MainConsole::getShowListOfProcesses()
+{
+    return this->showListOfProcesses;
 }
 
 void MainConsole::headerPrint()

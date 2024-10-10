@@ -1,6 +1,7 @@
 #include "ConsoleManager.h"
 #include "MainConsole.h"
 #include "ScreenConsole.h"
+#include <memory>
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 AConsole::String input;
@@ -47,25 +48,31 @@ void ConsoleManager::destroy()
 	}
 }
 
-void ConsoleManager::drawConsole() const
+void ConsoleManager::drawConsole()
 {
+	this->createdProcess = nullptr;
+	this->showListOfProcesses = false;
 	this->currentConsole->display();
 	if (currentConsole == consoleTable.at(MAIN_CONSOLE)) {
 		std::shared_ptr<MainConsole> mainConsole = std::dynamic_pointer_cast<MainConsole>(currentConsole);
 		if (mainConsole->hasExited()) {
-			const_cast<ConsoleManager*>(this)->exitApplication();
+			this->exitApplication();
 		}
 		if (!mainConsole->getStringToRegister().empty()) {
 			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister());
-			const_cast<ConsoleManager*>(this)->registerConsole(screenConsole);
+			this->registerConsole(screenConsole);
+			this->createdProcess = screenConsole->getProcess();
 		}
 		if (!mainConsole->getStringToRead().empty()) {
-			const_cast<ConsoleManager*>(this)->switchConsole(mainConsole->getStringToRead());
+			this->switchConsole(mainConsole->getStringToRead());
+		}
+		if (mainConsole->getShowListOfProcesses()) {
+			this->showListOfProcesses = true;
 		}
 	}
 	else {
 		if (this->currentConsole->hasExited()) {
-			const_cast<ConsoleManager*>(this)->returnToPreviousConsole();
+			this->returnToPreviousConsole();
 		}
 	}
 }
@@ -126,6 +133,16 @@ void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
 bool ConsoleManager::isRunning() const
 {
 	return running;
+}
+
+std::shared_ptr<Process> ConsoleManager::getCreatedProcess()
+{
+	return this->createdProcess;
+}
+
+bool ConsoleManager::getShowListOfProcesses()
+{
+	return this->showListOfProcesses;
 }
 
 HANDLE ConsoleManager::getConsole() const

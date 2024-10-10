@@ -1,5 +1,7 @@
 #pragma once
 #include "AConsole.h"
+#include "Process.h"
+#include <memory>
 
 class ScreenConsole : public AConsole
 {
@@ -12,11 +14,14 @@ public:
 	void process() override;
 	bool hasExited() override;
 
+	std::shared_ptr<Process> getProcess();
+
 private:
 	void printProcessData() const;
 
 	bool enabled = false;
 	bool exited = false;
+	std::shared_ptr<Process> linkedProcess;
 	String creationTime;       // String to hold the creation date and time
 
 	void initializeCreationTime();
