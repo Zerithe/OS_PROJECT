@@ -13,10 +13,8 @@ ConsoleManager::ConsoleManager()
 	this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>("MAIN_CONSOLE");
-	const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>("SCREEN_CONSOLE");
 
 	this->consoleTable[MAIN_CONSOLE] = mainConsole;
-	this->consoleTable[SCREEN_CONSOLE] = screenConsole;
 
 	this->switchConsole(MAIN_CONSOLE);
 
@@ -59,7 +57,7 @@ void ConsoleManager::drawConsole()
 			this->exitApplication();
 		}
 		if (!mainConsole->getStringToRegister().empty()) {
-			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister());
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions);
 			this->registerConsole(screenConsole);
 			this->createdProcess = screenConsole->getProcess();
 		}
@@ -128,6 +126,12 @@ void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
 	}
 	this->consoleTable[screenRef->getName()] = screenRef;
 	this->switchConsole(screenRef->getName());
+}
+
+void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstructions)
+{
+	this->minInstructions = minInstructions;
+	this->maxInstructions = maxInstructions;
 }
 
 bool ConsoleManager::isRunning() const

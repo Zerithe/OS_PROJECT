@@ -6,7 +6,7 @@
 class Process
 {
 public:
-	Process(int pid, std::string name);
+	Process(int pid, std::string name, int totalInstructions);
 	~Process() = default;
 
 	enum ProcessState

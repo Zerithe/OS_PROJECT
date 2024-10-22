@@ -3,18 +3,18 @@
 #include <fstream>
 #include <chrono>
 
-Process::Process(int pid, std::string name)
+Process::Process(int pid, std::string name, int totalInstructions)
 {
     this->pid = pid;
     this->name = name;
+    this->totalInstructions = totalInstructions;
     addCommand(ICommand::CommandType::PRINT);
-    this->totalInstructions = this->commandList.size();
 }
 
 void Process::addCommand(ICommand::CommandType command)
 {
     if (command == ICommand::CommandType::PRINT) {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < this->totalInstructions; i++) {
             this->commandList.push_back(std::make_shared<ICommand>(i, ICommand::CommandType::PRINT));
         }
     }

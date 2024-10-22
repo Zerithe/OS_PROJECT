@@ -9,7 +9,7 @@
 #include <random>
 using namespace std;
 
-ScreenConsole::ScreenConsole(String name) : AConsole(name)
+ScreenConsole::ScreenConsole(String name, int minInstructions, int maxInstructions) : AConsole(name)
 {
     this->name = name;
     std::random_device rd;  // Obtain a random seed from hardware
@@ -17,10 +17,11 @@ ScreenConsole::ScreenConsole(String name) : AConsole(name)
 
     // Define the range of random numbers (e.g., 1 to 100)
     std::uniform_int_distribution<> distr(1, 100);
-
+    std::uniform_int_distribution<> distr1(minInstructions, maxInstructions);
     // Generate a random integer
     int random_number = distr(gen);
-    this->linkedProcess = std::make_shared<Process>(random_number, name);
+    int totalInstructions = distr1(gen);
+    this->linkedProcess = std::make_shared<Process>(random_number, name, totalInstructions);
     initializeCreationTime();
 }
 

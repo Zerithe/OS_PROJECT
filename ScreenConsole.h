@@ -6,7 +6,7 @@
 class ScreenConsole : public AConsole
 {
 public:
-	ScreenConsole(String name);
+	ScreenConsole(String name, int minInstructions, int maxInstructions);
 
 	void onEnabled() override;
 	void offEnabled() override;

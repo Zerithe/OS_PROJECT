@@ -31,5 +31,6 @@ private:
 	coreList cores;
 	FinishedList finishedList;
 	bool running = true;
+	int coresUsed = 0;
 };
 

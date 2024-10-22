@@ -19,10 +19,12 @@ void FCFSScheduler::runFCFS()
 			if (!core->containsProcess() && !this->readyQueue.empty()) {
 				core->registerProcess(this->readyQueue.front());
 				this->readyQueue.pop();
+				this->coresUsed++;
 			}
 			if (core->containsProcess() && core->getIsFinished()) {
 				this->finishedList.push_back(core->getProcess());
 				core->deallocateCPU();
+				this->coresUsed--;
 			}
 		}
 	}
@@ -40,6 +42,11 @@ void FCFSScheduler::addProcess(std::shared_ptr<Process> process)
 
 void FCFSScheduler::showListOfProcesses()
 {
+	int noOfCores = this->cores.size();
+	float cpuUtilization = (this->coresUsed / static_cast<float>(noOfCores)) * 100;
+	std::cout << "CPU utilization: " << cpuUtilization << "%" << std::endl;
+	std::cout << "Cores used: " << this->coresUsed << std::endl;
+	std::cout << "Cores available: " << noOfCores - this->coresUsed << std::endl;
 	for (int i = 0; i < 15; ++i) {
 		std::cout << "-";
 	}
@@ -54,6 +61,10 @@ void FCFSScheduler::showListOfProcesses()
 	for (std::shared_ptr<Process> process : this->finishedList) {
 		std::cout << process->getName() << " " << process->getTimeFinished() << " Finished " << process->getTotalInstructions() << " / " << process->getTotalInstructions() << std::endl;
 	}
+	for (int i = 0; i < 15; ++i) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
 	
 }
 

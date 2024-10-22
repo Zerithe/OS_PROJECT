@@ -28,6 +28,7 @@ public:
 	void returnToPreviousConsole();
 	void exitApplication();
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
+	void setNumRangeOfInstructions(int minInstructions, int maxInstructions);
 	bool isRunning() const;
 	std::shared_ptr<Process> getCreatedProcess();
 	bool getShowListOfProcesses();
@@ -51,5 +52,7 @@ private:
 	bool running = true;
 	std::shared_ptr<Process> createdProcess = nullptr;
 	bool showListOfProcesses = false;
+	int minInstructions;
+	int maxInstructions;
 };
 

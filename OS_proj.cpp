@@ -6,6 +6,7 @@
 #include <map>
 #include <functional>
 #include <thread>
+#include <vector>
 
 #include "ConsoleManager.h"
 #include "FCFSScheduler.h"
@@ -79,6 +80,12 @@ int main()
     int maxInstructions;
     int delayPerExecution;
 
+    // Vector to hold shared pointers to CPUCore objects
+    std::vector<std::shared_ptr<CPUCore>> cpuCores;
+
+    // Vector to hold CPUCore threads
+    std::vector<std::thread> coreThreads;
+
     headerPrint();
 
     while (input != "initialize")
@@ -88,6 +95,7 @@ int main()
         if (input != "initialize")
             cout << "Unknown command.\n";
     }
+    system("cls");
 
     // Open the config text file
     std::ifstream infile("config.txt");
@@ -97,7 +105,7 @@ int main()
         std::cerr << "Unable to open config text file";
         return 1; // Return with an error code
     }
-
+ 
     std::string line;
 
     // Read the file line by line
@@ -142,23 +150,24 @@ int main()
     //functionMap["clear"] = functionHolder{ clear };
     
     ConsoleManager::initialize();
+    ConsoleManager::getInstance()->setNumRangeOfInstructions(minInstructions, maxInstructions);
     FCFSScheduler::initialize();
 
-    std::shared_ptr<CPUCore> core1 = std::make_shared<CPUCore>(0);
-    std::shared_ptr<CPUCore> core2 = std::make_shared<CPUCore>(1);
-    std::shared_ptr<CPUCore> core3 = std::make_shared<CPUCore>(2);
-    std::shared_ptr<CPUCore> core4 = std::make_shared<CPUCore>(3);
+    // Create CPU cores dynamically based on numCPU and start threads
+    for (int i = 0; i < numCpu; ++i) {
+        // Create a new CPUCore and store it in the vector
+        std::shared_ptr<CPUCore> core = std::make_shared<CPUCore>(i);
+        cpuCores.push_back(core);
 
-    FCFSScheduler::getInstance()->addCPUCore(core1);
-    FCFSScheduler::getInstance()->addCPUCore(core2);
-    FCFSScheduler::getInstance()->addCPUCore(core3);
-    FCFSScheduler::getInstance()->addCPUCore(core4);
+        // Create a new thread for each CPUCore::runCPU and store it in the vector
+        coreThreads.emplace_back(&CPUCore::runCPU, core);
+    }
+
+    for (const auto& core : cpuCores) {
+        FCFSScheduler::getInstance()->addCPUCore(core);
+    }
 
     std::thread fcfsThread(&FCFSScheduler::runFCFS, FCFSScheduler::getInstance());
-    std::thread core1Thread(&CPUCore::runCPU, core1);
-    std::thread core2Thread(&CPUCore::runCPU, core2);
-    std::thread core3Thread(&CPUCore::runCPU, core3);
-    std::thread core4Thread(&CPUCore::runCPU, core4);
     
     //headerPrint();
 
@@ -190,16 +199,17 @@ int main()
     }
 
     FCFSScheduler::getInstance()->stop();
-    core1->stop();
-    core2->stop();
-    core3->stop();
-    core4->stop();
+
+    for (const auto& core : cpuCores) {
+        core->stop();
+    }
 
     fcfsThread.join();
-    core1Thread.join();
-    core2Thread.join();
-    core3Thread.join();
-    core4Thread.join();
+    for (std::thread& t : coreThreads) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
 
     ConsoleManager::destroy();
     FCFSScheduler::destroy();
