@@ -156,7 +156,7 @@ int main()
     // Create CPU cores dynamically based on numCPU and start threads
     for (int i = 0; i < numCpu; ++i) {
         // Create a new CPUCore and store it in the vector
-        std::shared_ptr<CPUCore> core = std::make_shared<CPUCore>(i);
+        std::shared_ptr<CPUCore> core = std::make_shared<CPUCore>(i+1,delayPerExecution);
         cpuCores.push_back(core);
 
         // Create a new thread for each CPUCore::runCPU and store it in the vector

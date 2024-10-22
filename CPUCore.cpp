@@ -2,23 +2,26 @@
 #include <memory>
 #include <thread>
 
-CPUCore::CPUCore(int id)
+CPUCore::CPUCore(int id, int delayPerExecution)
 {
 	this->id = id;
+	this->delayPerExecution = delayPerExecution;
 }
 
 void CPUCore::runCPU()
 {
 	while (this->running)
 	{
-		if (this->process != nullptr) {
-			this->process->executeCurrentCommand();
+		if (this->process != nullptr) { // && this->cpuCycle % (delayPerExecution + 1) == 0
+			if (this->cpuCycle % (delayPerExecution + 1) == 0)
+				this->process->executeCurrentCommand();
 			if (this->process->isFinished()) {
 				this->finishedProcess = true;
 			}
-			else {
+			else if (this->cpuCycle % (delayPerExecution + 1) == 0) {
 				this->process->moveToNextLine();
 			}
+			this->cpuCycle++;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
@@ -55,6 +58,7 @@ void CPUCore::deallocateCPU()
 {
 	this->process = nullptr;
 	this->finishedProcess = false;
+	this->cpuCycle = 0;
 }
 
 void CPUCore::stop()

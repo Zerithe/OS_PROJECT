@@ -5,7 +5,7 @@
 class CPUCore
 {
 public:
-	CPUCore(int id);
+	CPUCore(int id, int delayPerExecution);
 	~CPUCore() = default;
 
 	void runCPU();
@@ -21,5 +21,7 @@ private:
 	std::shared_ptr<Process> process = nullptr;
 	bool finishedProcess = false;
 	bool running = true;
+	int cpuCycle = 0;
+	int delayPerExecution;
 };
 
