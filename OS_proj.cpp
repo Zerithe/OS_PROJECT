@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <windows.h>
 #include <string>
 #include <map>
@@ -69,6 +71,68 @@ void clear()
 int main()
 {
     string input;
+    int numCpu;
+    string scheduler;
+    int quantumCycles;
+    int batchProcessFreq;
+    int minInstructions;
+    int maxInstructions;
+    int delayPerExecution;
+
+    headerPrint();
+
+    while (input != "initialize")
+    {
+        cout << "enter a command: ";
+        cin >> input;
+        if (input != "initialize")
+            cout << "Unknown command.\n";
+    }
+
+    // Open the config text file
+    std::ifstream infile("config.txt");
+
+    // Check if the file was successfully opened
+    if (!infile) {
+        std::cerr << "Unable to open config text file";
+        return 1; // Return with an error code
+    }
+
+    std::string line;
+
+    // Read the file line by line
+    while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        std::string key;
+
+        // Extract the key (before the space) and then process based on the key
+        if (line.find("num-cpu") != std::string::npos) {
+            iss >> key >> numCpu;
+        }
+        else if (line.find("scheduler") != std::string::npos) {
+            iss >> key >> scheduler;
+            scheduler = scheduler.substr(1, scheduler.size() - 2); // Remove the quotes around the string
+        }
+        else if (line.find("quantum-cycles") != std::string::npos) {
+            iss >> key >> quantumCycles;
+        }
+        else if (line.find("batch-process-freq") != std::string::npos) {
+            iss >> key >> batchProcessFreq;
+        }
+        else if (line.find("min-ins") != std::string::npos) {
+            iss >> key >> minInstructions;
+        }
+        else if (line.find("max-ins") != std::string::npos) {
+            iss >> key >> maxInstructions;
+        }
+        else if (line.find("delay-per-exec") != std::string::npos) {
+            iss >> key >> delayPerExecution;
+        }
+    }
+
+    // Close the file
+    infile.close();
+
     //map<string, functionHolder> functionMap;
     //functionMap["initialize"] = functionHolder{ initialize };
     //functionMap["screen"] = functionHolder{ screen };
@@ -76,7 +140,7 @@ int main()
     //functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
     //functionMap["report-util"] = functionHolder{ reportUtil };
     //functionMap["clear"] = functionHolder{ clear };
-
+    
     ConsoleManager::initialize();
     FCFSScheduler::initialize();
 
@@ -95,7 +159,7 @@ int main()
     std::thread core2Thread(&CPUCore::runCPU, core2);
     std::thread core3Thread(&CPUCore::runCPU, core3);
     std::thread core4Thread(&CPUCore::runCPU, core4);
-
+    
     //headerPrint();
 
     /*while (input != "exit")
@@ -112,7 +176,7 @@ int main()
             cout << "Unkown command.\n";
         }
     }*/
-
+    
     bool running = true;
     while (running) 
     {
@@ -139,6 +203,7 @@ int main()
 
     ConsoleManager::destroy();
     FCFSScheduler::destroy();
+    
     return 0;
 }
 
