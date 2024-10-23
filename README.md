@@ -1,9 +1,9 @@
 # OS_proj
 CSOPESY S15
 
-CALUGTONG, Darylle Xander
-DE VERA, Jonathan Lagunzad
-RANIGO, Gerome David
+CALUGTONG, Darylle Xander,
+DE VERA, Jonathan Lagunzad,
+RANIGO, Gerome David,
 REYES, Kenwin Hans
 
 Instructions on how to run the program:
