@@ -5,7 +5,7 @@
 class CPUCore
 {
 public:
-	CPUCore(int id, int delayPerExecution);
+	CPUCore(int id, int delayPerExecution, int quantumSlice, std::string scheduler);
 	~CPUCore() = default;
 
 	void runCPU();
@@ -14,6 +14,7 @@ public:
 	std::shared_ptr<Process> getProcess();
 	int getId();
 	bool getIsFinished();
+	bool getIsPreEmpted();
 	void deallocateCPU();
 	void stop();
 private:
@@ -23,5 +24,8 @@ private:
 	bool running = true;
 	int cpuCycle = 0;
 	int delayPerExecution;
+	std::string scheduler;
+	int quantumSlice;
+	bool preEmptedProcess = false;
 };
 

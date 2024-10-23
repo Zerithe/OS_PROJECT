@@ -2,10 +2,12 @@
 #include <memory>
 #include <thread>
 
-CPUCore::CPUCore(int id, int delayPerExecution)
+CPUCore::CPUCore(int id, int delayPerExecution, int quantumSlice, std::string scheduler)
 {
 	this->id = id;
 	this->delayPerExecution = delayPerExecution;
+	this->quantumSlice = quantumSlice;
+	this->scheduler = scheduler;
 }
 
 void CPUCore::runCPU()
@@ -13,7 +15,10 @@ void CPUCore::runCPU()
 	while (this->running)
 	{
 		if (this->process != nullptr) {
-			if (this->cpuCycle % (delayPerExecution + 1) == 0 && !this->process->isFinished()) { //check if the process is not yet finished and the delay is over
+			if (this->scheduler == "rr" && this->cpuCycle >= this->quantumSlice) {
+				this->preEmptedProcess = true;
+			}
+			if (this->cpuCycle % (delayPerExecution + 1) == 0 && !this->process->isFinished() && !this->preEmptedProcess) { //check if the process is not yet finished and the delay is over
 				this->process->executeCurrentCommand();
 				this->process->moveToNextLine();
 			}
@@ -53,10 +58,16 @@ bool CPUCore::getIsFinished()
 	return this->finishedProcess;
 }
 
+bool CPUCore::getIsPreEmpted()
+{
+	return this->preEmptedProcess;
+}
+
 void CPUCore::deallocateCPU()
 {
 	this->process = nullptr;
 	this->finishedProcess = false;
+	this->preEmptedProcess = false;
 	this->cpuCycle = 0;
 }
 

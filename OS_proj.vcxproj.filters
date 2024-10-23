@@ -50,6 +50,9 @@
     <ClCompile Include="CPUCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RRScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleManager.h">
@@ -83,6 +86,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Process.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RRScheduler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

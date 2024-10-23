@@ -2,6 +2,7 @@
 #include "MainConsole.h"
 #include "ScreenConsole.h"
 #include "FCFSScheduler.h"
+#include "RRScheduler.h"
 #include <memory>
 #include <thread>
 
@@ -66,7 +67,10 @@ void ConsoleManager::drawConsole()
 			this->switchConsole(mainConsole->getStringToRead());
 		}
 		if (mainConsole->getShowListOfProcesses()) {
-			FCFSScheduler::getInstance()->showListOfProcesses();
+			if (this->scheduler == "fcfs")
+				FCFSScheduler::getInstance()->showListOfProcesses();
+			else 
+				RRScheduler::getInstance()->showListOfProcesses();
 		}
 		if (mainConsole->getStartSchedulerTest()) {
 			this->startSchedulerTest = true;
@@ -133,7 +137,10 @@ void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
 	}
 	this->consoleTable[screenRef->getName()] = screenRef;
 	this->switchConsole(screenRef->getName());
-	FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
+	if (this->scheduler == "fcfs")
+		FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
+	else 
+		RRScheduler::getInstance()->addProcess(screenRef->getProcess());
 }
 
 void ConsoleManager::registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef)
@@ -144,7 +151,10 @@ void ConsoleManager::registerConsoleForSchedulerTest(std::shared_ptr<ScreenConso
 		return;
 	}
 	this->consoleTable[screenRef->getName()] = screenRef;
-	FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
+	if (this->scheduler == "fcfs")
+		FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
+	else
+		RRScheduler::getInstance()->addProcess(screenRef->getProcess());
 }
 
 void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstructions)
@@ -156,6 +166,11 @@ void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstr
 void ConsoleManager::setBatchProcessFrequency(int batchProcessFreq)
 {
 	this->batchProcessFreq = batchProcessFreq;
+}
+
+void ConsoleManager::setScheduler(std::string scheduler)
+{
+	this->scheduler = scheduler;
 }
 
 void ConsoleManager::runSchedulerTest()

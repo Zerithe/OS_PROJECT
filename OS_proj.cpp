@@ -10,6 +10,7 @@
 
 #include "ConsoleManager.h"
 #include "FCFSScheduler.h"
+#include "RRScheduler.h"
 #include "CPUCore.h"
 
 
@@ -152,12 +153,18 @@ int main()
     ConsoleManager::initialize();
     ConsoleManager::getInstance()->setNumRangeOfInstructions(minInstructions, maxInstructions);
     ConsoleManager::getInstance()->setBatchProcessFrequency(batchProcessFreq);
-    FCFSScheduler::initialize();
+    ConsoleManager::getInstance()->setScheduler(scheduler);
+    if (scheduler == "fcfs") {
+        FCFSScheduler::initialize();
+    }
+    else {
+        RRScheduler::initialize();
+    }
 
     // Create CPU cores dynamically based on numCPU and start threads
     for (int i = 0; i < numCpu; ++i) {
         // Create a new CPUCore and store it in the vector
-        std::shared_ptr<CPUCore> core = std::make_shared<CPUCore>(i+1,delayPerExecution);
+        std::shared_ptr<CPUCore> core = std::make_shared<CPUCore>(i+1,delayPerExecution, quantumCycles, scheduler);
         cpuCores.push_back(core);
 
         // Create a new thread for each CPUCore::runCPU and store it in the vector
@@ -165,10 +172,20 @@ int main()
     }
 
     for (const auto& core : cpuCores) {
-        FCFSScheduler::getInstance()->addCPUCore(core);
+        if (scheduler == "fcfs")
+            FCFSScheduler::getInstance()->addCPUCore(core);
+        else 
+            RRScheduler::getInstance()->addCPUCore(core);
     }
-
-    std::thread fcfsThread(&FCFSScheduler::runFCFS, FCFSScheduler::getInstance());
+    if (scheduler == "fcfs") {
+        std::thread fcfsThread(&FCFSScheduler::runFCFS, FCFSScheduler::getInstance());
+        fcfsThread.detach();
+    }
+    else {
+        std::thread rrThread(&RRScheduler::runRR, RRScheduler::getInstance());
+        rrThread.detach();
+    }
+    
     
     //headerPrint();
 
@@ -198,14 +215,16 @@ int main()
         }
         running = ConsoleManager::getInstance()->isRunning();
     }
+    if(scheduler == "fcfs")
+        FCFSScheduler::getInstance()->stop();
+    else 
+        RRScheduler::getInstance()->stop();
 
-    FCFSScheduler::getInstance()->stop();
 
     for (const auto& core : cpuCores) {
         core->stop();
     }
 
-    fcfsThread.join();
     for (std::thread& t : coreThreads) {
         if (t.joinable()) {
             t.join();
@@ -213,7 +232,10 @@ int main()
     }
 
     ConsoleManager::destroy();
-    FCFSScheduler::destroy();
+    if (scheduler == "fcfs")
+        FCFSScheduler::destroy();
+    else
+        RRScheduler::destroy();
     
     return 0;
 }
