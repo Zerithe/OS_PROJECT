@@ -12,7 +12,7 @@ ICommand::CommandType ICommand::getCommandType() const
 {
     return this->commandType;
 }
-
+/*
 void ICommand::execute(std::ofstream& outfile, int coreID, std::string processName)
 {
     std::string dateNow = getDateNow();
@@ -22,6 +22,14 @@ void ICommand::execute(std::ofstream& outfile, int coreID, std::string processNa
     else {
         std::cerr << "File is not open for writing.\n";
     }
+}
+*/
+void ICommand::execute(int coreID, std::string processName)
+{
+    std::string dateNow = getDateNow();
+    std::ofstream nullStream("NUL");     // On Windows
+
+    nullStream << "(" << dateNow << ")" << " Core:" << coreID << " Hello world from " << processName << std::endl;
 }
 
 std::string ICommand::getDateNow()

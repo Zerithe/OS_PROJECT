@@ -25,6 +25,7 @@ void Process::executeCurrentCommand()
     if (this->commandCounter == 0)
     {
         this->currentState = ProcessState::RUNNING;
+        /*
         std::ofstream outfile(this->name + ".txt");
         if (outfile.is_open()) {
             outfile << "Process name: " << this->name << "\n";
@@ -32,13 +33,18 @@ void Process::executeCurrentCommand()
             this->commandList.at(this->commandCounter)->execute(outfile, this->cpuCoreId, this->name);
             outfile.close();
         }
+        */
+        this->commandList.at(this->commandCounter)->execute(this->cpuCoreId, this->name);
     }
     else if (this->commandCounter > 0 && this->commandCounter < this->totalInstructions) {
+        /*
         std::ofstream appendfile(this->name + ".txt", std::ios::app);
         if (appendfile.is_open()) {
             this->commandList.at(this->commandCounter)->execute(appendfile, this->cpuCoreId, this->name);
             appendfile.close();
         }
+        */
+        this->commandList.at(this->commandCounter)->execute(this->cpuCoreId, this->name);
     }
     else {
         this->currentState = ProcessState::FINISHED;

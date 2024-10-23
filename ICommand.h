@@ -11,7 +11,8 @@ public:
 
 	ICommand(int pid, CommandType commandType);
 	CommandType getCommandType() const;
-	void execute(std::ofstream& outfile, int coreID, std::string processName);
+	//void execute(std::ofstream& outfile, int coreID, std::string processName);
+	void execute(int coreID, std::string processName);
 	std::string getDateNow();
 
 protected:

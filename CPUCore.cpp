@@ -18,11 +18,13 @@ void CPUCore::runCPU()
 			if (this->scheduler == "rr" && this->cpuCycle >= this->quantumSlice) {
 				this->preEmptedProcess = true;
 			}
-			if (this->cpuCycle % (delayPerExecution + 1) == 0 && !this->process->isFinished() && !this->preEmptedProcess) { //check if the process is not yet finished and the delay is over
-				this->process->executeCurrentCommand();
-				this->process->moveToNextLine();
+			if (this->cpuCycle % (delayPerExecution + 1) == 0 && this->process != nullptr && !this->process->isFinished() && !this->preEmptedProcess) { //check if the process is not yet finished and the delay is over
+				if (this->process != nullptr) {
+					this->process->executeCurrentCommand();
+					this->process->moveToNextLine();
+				}
 			}
-			if (this->process->isFinished()) {
+			if (this->process != nullptr && this->process->isFinished()) {
 				this->finishedProcess = true;
 			}
 			this->cpuCycle++;
