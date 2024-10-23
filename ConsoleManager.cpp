@@ -1,7 +1,9 @@
 #include "ConsoleManager.h"
 #include "MainConsole.h"
 #include "ScreenConsole.h"
+#include "FCFSScheduler.h"
 #include <memory>
+#include <thread>
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 AConsole::String input;
@@ -48,8 +50,8 @@ void ConsoleManager::destroy()
 
 void ConsoleManager::drawConsole()
 {
-	this->createdProcess = nullptr;
-	this->showListOfProcesses = false;
+	this->startSchedulerTest = false;
+
 	this->currentConsole->display();
 	if (currentConsole == consoleTable.at(MAIN_CONSOLE)) {
 		std::shared_ptr<MainConsole> mainConsole = std::dynamic_pointer_cast<MainConsole>(currentConsole);
@@ -59,13 +61,18 @@ void ConsoleManager::drawConsole()
 		if (!mainConsole->getStringToRegister().empty()) {
 			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions);
 			this->registerConsole(screenConsole);
-			this->createdProcess = screenConsole->getProcess();
 		}
 		if (!mainConsole->getStringToRead().empty()) {
 			this->switchConsole(mainConsole->getStringToRead());
 		}
 		if (mainConsole->getShowListOfProcesses()) {
-			this->showListOfProcesses = true;
+			FCFSScheduler::getInstance()->showListOfProcesses();
+		}
+		if (mainConsole->getStartSchedulerTest()) {
+			this->startSchedulerTest = true;
+		}
+		if (mainConsole->getStopSchedulerTest()) {
+			this->endSchedulerTest();
 		}
 	}
 	else {
@@ -126,6 +133,18 @@ void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
 	}
 	this->consoleTable[screenRef->getName()] = screenRef;
 	this->switchConsole(screenRef->getName());
+	FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
+}
+
+void ConsoleManager::registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef)
+{
+	if (this->consoleTable.contains(screenRef->getName()))
+	{
+		std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
+		return;
+	}
+	this->consoleTable[screenRef->getName()] = screenRef;
+	FCFSScheduler::getInstance()->addProcess(screenRef->getProcess());
 }
 
 void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstructions)
@@ -134,20 +153,44 @@ void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstr
 	this->maxInstructions = maxInstructions;
 }
 
+void ConsoleManager::setBatchProcessFrequency(int batchProcessFreq)
+{
+	this->batchProcessFreq = batchProcessFreq;
+}
+
+void ConsoleManager::runSchedulerTest()
+{
+	this->schedulerTest = true;
+	int processNameCounter = 1;
+	int cpuCycle = 1;
+	while (this->schedulerTest) {
+		if (cpuCycle % batchProcessFreq == 0) {
+			const std::string processName = "p" + std::to_string(processNameCounter);
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(processName, this->minInstructions, this->maxInstructions);
+			this->registerConsoleForSchedulerTest(screenConsole);
+			processNameCounter++;
+		}
+		cpuCycle++;
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	}
+}
+
+void ConsoleManager::endSchedulerTest()
+{
+	this->schedulerTest = false;
+}
+
 bool ConsoleManager::isRunning() const
 {
 	return running;
 }
 
-std::shared_ptr<Process> ConsoleManager::getCreatedProcess()
+
+bool ConsoleManager::getStartSchedulerTest()
 {
-	return this->createdProcess;
+	return this->startSchedulerTest;
 }
 
-bool ConsoleManager::getShowListOfProcesses()
-{
-	return this->showListOfProcesses;
-}
 
 HANDLE ConsoleManager::getConsole() const
 {

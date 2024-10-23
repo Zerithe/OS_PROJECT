@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <conio.h>
 #include "KeyboardHandler.h"
+#include "FCFSScheduler.h"
 
 using namespace std;
 
@@ -31,6 +32,8 @@ void MainConsole::display()
     this->stringToRead.clear();
     this->stringToRegister.clear();
     this->showListOfProcesses = false;
+    this->startSchedulerTest = false;
+    this->stopSchedulerTest = false;
     string command, option, name;
     onEnabled();
     cout << "enter a command: ";
@@ -67,6 +70,12 @@ void MainConsole::display()
         {
             cout << "Invalid command" << endl;
         }
+    }
+    else if (command == "scheduler-test") {
+        this->startSchedulerTest = true;
+    }
+    else if (command == "scheduler-stop") {
+        this->stopSchedulerTest = true;
     }
     else {
         cout << "Command not found" << endl;
@@ -115,6 +124,16 @@ AConsole::String MainConsole::getStringToRead()
 bool MainConsole::getShowListOfProcesses()
 {
     return this->showListOfProcesses;
+}
+
+bool MainConsole::getStartSchedulerTest()
+{
+    return this->startSchedulerTest;
+}
+
+bool MainConsole::getStopSchedulerTest()
+{
+    return this->stopSchedulerTest;
 }
 
 void MainConsole::headerPrint()

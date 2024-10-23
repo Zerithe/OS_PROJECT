@@ -15,13 +15,10 @@ ScreenConsole::ScreenConsole(String name, int minInstructions, int maxInstructio
     std::random_device rd;  // Obtain a random seed from hardware
     std::mt19937 gen(rd()); // Seed the generator
 
-    // Define the range of random numbers (e.g., 1 to 100)
-    std::uniform_int_distribution<> distr(1, 100);
     std::uniform_int_distribution<> distr1(minInstructions, maxInstructions);
-    // Generate a random integer
-    int random_number = distr(gen);
+    int id = generateUniqueInt();
     int totalInstructions = distr1(gen);
-    this->linkedProcess = std::make_shared<Process>(random_number, name, totalInstructions);
+    this->linkedProcess = std::make_shared<Process>(id, name, totalInstructions);
     initializeCreationTime();
 }
 
@@ -102,9 +99,16 @@ std::shared_ptr<Process> ScreenConsole::getProcess()
 
 void ScreenConsole::printProcessData() const
 {
-    cout << "Process Name: " << this->name << endl;
-    cout << this->linkedProcess->getCommandCounter() << "/" << this->linkedProcess->getTotalInstructions() << endl;
-    cout << "Creation time: " << this->creationTime << endl;
+    cout << "Process: " << this->name << endl;
+    cout << "ID: " << this->linkedProcess->getProcessID() << endl << endl;
+    if (this->linkedProcess->isFinished()) {
+        cout << "Finished!" << endl;
+    }
+    else {
+        cout << "Current instruction line: " << this->linkedProcess->getCommandCounter() << endl;
+        cout << "Lines of code: " << this->linkedProcess->getTotalInstructions() << endl;
+        cout << "Creation time: " << this->creationTime << endl;
+    }
 }
 
 void ScreenConsole::initializeCreationTime()
@@ -124,4 +128,9 @@ void ScreenConsole::initializeCreationTime()
 
     // Store formatted time in creationTime
     creationTime = oss.str();
+}
+
+int ScreenConsole::generateUniqueInt()
+{
+    return std::chrono::system_clock::now().time_since_epoch().count();
 }

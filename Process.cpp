@@ -50,6 +50,10 @@ void Process::executeCurrentCommand()
 void Process::moveToNextLine()
 {
     this->commandCounter++;
+    if (this->commandCounter >= this->totalInstructions) {
+        this->currentState = ProcessState::FINISHED;
+        this->timeFinished = getDateNow();
+    }
 }
 
 void Process::setCoreId(int coreID)
@@ -89,6 +93,11 @@ std::string Process::getTimeFinished()
 std::string Process::getTimeStarted()
 {
     return this->timeStarted;
+}
+
+int Process::getProcessID() const
+{
+    return this->pid;
 }
 
 void Process::setTimeStarted()

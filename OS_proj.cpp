@@ -151,6 +151,7 @@ int main()
     
     ConsoleManager::initialize();
     ConsoleManager::getInstance()->setNumRangeOfInstructions(minInstructions, maxInstructions);
+    ConsoleManager::getInstance()->setBatchProcessFrequency(batchProcessFreq);
     FCFSScheduler::initialize();
 
     // Create CPU cores dynamically based on numCPU and start threads
@@ -191,10 +192,10 @@ int main()
     {
         ConsoleManager::getInstance()->process();
         ConsoleManager::getInstance()->drawConsole();
-        if (ConsoleManager::getInstance()->getCreatedProcess() != nullptr)
-            FCFSScheduler::getInstance()->addProcess(ConsoleManager::getInstance()->getCreatedProcess());
-        if (ConsoleManager::getInstance()->getShowListOfProcesses())
-            FCFSScheduler::getInstance()->showListOfProcesses();
+        if (ConsoleManager::getInstance()->getStartSchedulerTest()) {
+            std::thread schedulerTestThread(&ConsoleManager::runSchedulerTest, ConsoleManager::getInstance());
+            schedulerTestThread.detach();
+        }
         running = ConsoleManager::getInstance()->isRunning();
     }
 

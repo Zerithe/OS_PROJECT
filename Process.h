@@ -25,6 +25,7 @@ public:
 	std::string getDateNow();
 	std::string getTimeFinished();
 	std::string getTimeStarted();
+	int getProcessID() const;
 	void setTimeStarted();
 	int getCommandCounter() const;
 	int getTotalInstructions() const;

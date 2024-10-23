@@ -16,6 +16,8 @@ public:
 	AConsole::String getStringToRegister();
 	AConsole::String getStringToRead();
 	bool getShowListOfProcesses();
+	bool getStartSchedulerTest();
+	bool getStopSchedulerTest();
 
 	
 private:
@@ -23,6 +25,8 @@ private:
 	bool enabled = false;
 	bool exited = false;
 	bool showListOfProcesses = false;
+	bool startSchedulerTest = false;
+	bool stopSchedulerTest = false;
 	AConsole::String stringToRegister = "";
 	AConsole::String stringToRead = "";
 };

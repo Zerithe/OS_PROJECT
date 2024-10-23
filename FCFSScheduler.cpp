@@ -1,7 +1,10 @@
 #include "FCFSScheduler.h"
 #include "Process.h"
 #include "CPUCore.h"
+#include "ScreenConsole.h"
+#include "ConsoleManager.h"
 #include <thread>
+#include <memory>
 
 FCFSScheduler* FCFSScheduler::sharedInstance = nullptr;
 
@@ -39,6 +42,7 @@ void FCFSScheduler::addProcess(std::shared_ptr<Process> process)
 {
 	this->readyQueue.push(process);
 }
+
 
 void FCFSScheduler::showListOfProcesses()
 {

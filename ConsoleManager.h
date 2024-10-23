@@ -27,11 +27,15 @@ public:
 	void switchConsole(AConsole::String consoleName);
 	void returnToPreviousConsole();
 	void exitApplication();
+
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
+	void registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef);
 	void setNumRangeOfInstructions(int minInstructions, int maxInstructions);
+	void setBatchProcessFrequency(int batchProcessFreq);
+	void runSchedulerTest();
+	void endSchedulerTest();
 	bool isRunning() const;
-	std::shared_ptr<Process> getCreatedProcess();
-	bool getShowListOfProcesses();
+	bool getStartSchedulerTest();
 
 	HANDLE getConsole() const;
 
@@ -50,9 +54,10 @@ private:
 
 	HANDLE consoleHandle;
 	bool running = true;
-	std::shared_ptr<Process> createdProcess = nullptr;
-	bool showListOfProcesses = false;
+	bool startSchedulerTest = false;
+	bool schedulerTest = true;
 	int minInstructions;
 	int maxInstructions;
+	int batchProcessFreq;
 };
 

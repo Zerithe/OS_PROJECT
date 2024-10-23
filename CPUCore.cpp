@@ -12,14 +12,13 @@ void CPUCore::runCPU()
 {
 	while (this->running)
 	{
-		if (this->process != nullptr) { // && this->cpuCycle % (delayPerExecution + 1) == 0
-			if (this->cpuCycle % (delayPerExecution + 1) == 0)
+		if (this->process != nullptr) {
+			if (this->cpuCycle % (delayPerExecution + 1) == 0 && !this->process->isFinished()) { //check if the process is not yet finished and the delay is over
 				this->process->executeCurrentCommand();
+				this->process->moveToNextLine();
+			}
 			if (this->process->isFinished()) {
 				this->finishedProcess = true;
-			}
-			else if (this->cpuCycle % (delayPerExecution + 1) == 0) {
-				this->process->moveToNextLine();
 			}
 			this->cpuCycle++;
 		}
