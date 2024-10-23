@@ -32,6 +32,7 @@ void MainConsole::display()
     this->stringToRead.clear();
     this->stringToRegister.clear();
     this->showListOfProcesses = false;
+    this->printListOfProcesses = false;
     this->startSchedulerTest = false;
     this->stopSchedulerTest = false;
     string command, option, name;
@@ -46,6 +47,9 @@ void MainConsole::display()
     }
     else if (command == "screen -ls") {
         this->showListOfProcesses = true;
+    }
+    else if (command == "report-util") {
+        this->printListOfProcesses = true;
     }
     else if (command.substr(0, 9) == "screen -r") {
         name = command.substr(10);
@@ -124,6 +128,11 @@ AConsole::String MainConsole::getStringToRead()
 bool MainConsole::getShowListOfProcesses()
 {
     return this->showListOfProcesses;
+}
+
+bool MainConsole::getPrintListOfProcesses()
+{
+    return this->printListOfProcesses;
 }
 
 bool MainConsole::getStartSchedulerTest()

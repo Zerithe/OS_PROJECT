@@ -72,6 +72,12 @@ void ConsoleManager::drawConsole()
 			else 
 				RRScheduler::getInstance()->showListOfProcesses();
 		}
+		if (mainConsole->getPrintListOfProcesses()) {
+			if (this->scheduler == "fcfs")
+				FCFSScheduler::getInstance()->printListOfProcesses();
+			else
+				RRScheduler::getInstance()->printListOfProcesses();
+		}
 		if (mainConsole->getStartSchedulerTest()) {
 			this->startSchedulerTest = true;
 		}

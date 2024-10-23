@@ -5,6 +5,7 @@
 #include "ConsoleManager.h"
 #include <thread>
 #include <memory>
+#include <fstream>
 
 RRScheduler* RRScheduler::sharedInstance = nullptr;
 
@@ -73,6 +74,38 @@ void RRScheduler::showListOfProcesses()
 	}
 	std::cout << std::endl;
 
+}
+
+void RRScheduler::printListOfProcesses()
+{
+	int noOfCores = this->cores.size();
+	float cpuUtilization = (this->coresUsed / static_cast<float>(noOfCores)) * 100;
+	std::ofstream outfile("csopesy-log.txt");
+	if (outfile.is_open()) {
+		outfile << "CPU utilization: " << cpuUtilization << "%" << "\n";
+		outfile << "Cores used: " << this->coresUsed << "\n";
+		outfile << "Cores available: " << noOfCores - this->coresUsed << "\n";
+		for (int i = 0; i < 15; ++i) {
+			outfile << "-";
+		}
+		outfile << "\n";
+		outfile << "Running processes:" << "\n";
+		for (std::shared_ptr<CPUCore> core : this->cores) {
+			if (core->containsProcess()) {
+				outfile << core->getProcess()->getName() << " " << core->getProcess()->getTimeStarted() << " Core: " << core->getId() << " " << core->getProcess()->getCommandCounter() << " / " << core->getProcess()->getTotalInstructions() << "\n";
+			}
+		}
+		outfile << "Finished processes:" << "\n";
+		for (std::shared_ptr<Process> process : this->finishedList) {
+			outfile << process->getName() << " " << process->getTimeFinished() << " Finished " << process->getTotalInstructions() << " / " << process->getTotalInstructions() << "\n";
+		}
+		for (int i = 0; i < 15; ++i) {
+			outfile << "-";
+		}
+		outfile << "\n";
+		outfile.close();
+	}
+	
 }
 
 void RRScheduler::stop()
