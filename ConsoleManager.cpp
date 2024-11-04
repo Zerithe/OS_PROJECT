@@ -1,6 +1,8 @@
 #include "ConsoleManager.h"
 #include "MainConsole.h"
 #include "ScreenConsole.h"
+#include <memory>
+#include <thread>
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 AConsole::String input;
@@ -49,7 +51,9 @@ void ConsoleManager::destroy()
 
 void ConsoleManager::drawConsole() const
 {
+
 	this->currentConsole->display();
+	//std::thread drawThread(&AConsole::display, this->currentConsole);
 	if (currentConsole == consoleTable.at(MAIN_CONSOLE)) {
 		std::shared_ptr<MainConsole> mainConsole = std::dynamic_pointer_cast<MainConsole>(currentConsole);
 		if (mainConsole->hasExited()) {
@@ -72,7 +76,10 @@ void ConsoleManager::drawConsole() const
 
 void ConsoleManager::process() const
 {
+	
 	this->currentConsole->process();
+	//std::thread processThread(&AConsole::process, this->currentConsole);
+
 }
 
 void ConsoleManager::switchConsole(AConsole::String consoleName)
@@ -135,4 +142,8 @@ HANDLE ConsoleManager::getConsole() const
 
 void ConsoleManager::setCursorPosition(int posX, int posY) const
 {
+	COORD coord;
+	coord.X = posX;
+	coord.Y = posY;
+	SetConsoleCursorPosition(this->consoleHandle, coord);
 }

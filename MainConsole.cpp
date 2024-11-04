@@ -3,8 +3,12 @@
 #include <Windows.h>
 #include <conio.h>
 #include "KeyboardHandler.h"
+#include <thread>
 
 using namespace std;
+
+std::atomic<bool> inputProcessed = false;
+static constexpr int POLLING_DELAY = 5;
 
 MainConsole::MainConsole(String name) : AConsole(name)
 {
@@ -28,68 +32,77 @@ void MainConsole::offEnabled()
 
 void MainConsole::display()
 {
-    this->stringToRead.clear();
-    this->stringToRegister.clear();
-    string command, option, name;
     onEnabled();
     cout << "enter a command: ";
-    getline(cin, command);
-    if (command == "clear" || command == "cls") {
-        clear();
-    }
-    else if (command == "exit") {
-        exited = true;
-    }
-    else if (command.substr(0, 9) == "screen -r") {
-        name = command.substr(10);
+    if (inputProcessed == true) {
+        this->stringToRead.clear();
+        this->stringToRegister.clear();
+        string option, name;
+        if (command == "clear" || command == "cls") {
+            clear();
+        }
+        else if (command == "exit") {
+            exited = true;
+        }
+        else if (command.substr(0, 9) == "screen -r") {
+            name = command.substr(10);
 
-        if (!name.empty())
-        {
-            this->stringToRead = name;
+            if (!name.empty())
+            {
+                this->stringToRead = name;
+            }
+            else
+            {
+                cout << "Invalid command" << endl;
+            }
         }
-        else
-        {
-            cout << "Invalid command" << endl;
-        }
-    }
-    else if (command.substr(0, 9) == "screen -s") {
-        name = command.substr(10);
+        else if (command.substr(0, 9) == "screen -s") {
+            name = command.substr(10);
 
-        if (!name.empty())
-        {
-            this->stringToRegister = name;
+            if (!name.empty())
+            {
+                this->stringToRegister = name;
+            }
+            else
+            {
+                cout << "Invalid command" << endl;
+            }
         }
-        else
-        {
-            cout << "Invalid command" << endl;
+        else {
+            cout << "Command not found" << endl;
         }
     }
-    else {
-        cout << "Command not found" << endl;
-    }
+	inputProcessed = false;
 
+	//std::this_thread::sleep_for(std::chrono::milliseconds(POLLING_DELAY));
 }
 
 void MainConsole::process()
 {
-	KeyboardHandler keyboardHandler;
+	static AConsole::String input;
     if (enabled) {
         if (_kbhit())
         {
-            char key = _getch();
-            char input[256];
-           
-            if (GetAsyncKeyState(key) & 0x8000)
-            {
-                keyboardHandler.OnKeyDown(key);
+			char ch = _getch();
+            if (ch == '\r') {
+				inputProcessed = true;
+				command = input;
+				input.clear();
+			}
+			else if (ch == '\b') {
+				if (input.length() > 0) {
+					input.pop_back();
+					cout << "\b \b";
+				}
+			}
+			else {
+				input += ch;
+				cout << ch;
             }
-            else
-            {
-                keyboardHandler.OnKeyUp(key);
-            }
-
         }
     }
+
+	//std::this_thread::sleep_for(std::chrono::milliseconds(POLLING_DELAY));
 }
 
 void MainConsole::clear()

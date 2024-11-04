@@ -23,5 +23,6 @@ private:
 	bool exited = false;
 	AConsole::String stringToRegister = "";
 	AConsole::String stringToRead = "";
+	AConsole::String command = "";
 };
 

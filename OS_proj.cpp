@@ -65,14 +65,14 @@ void clear()
 
 int main()
 {
-    string input;
+    /*string input;
     map<string, functionHolder> functionMap;
     functionMap["initialize"] = functionHolder{ initialize };
     functionMap["screen"] = functionHolder{ screen };
     functionMap["scheduler-test"] = functionHolder{ schedulerTest };
     functionMap["scheduler-stop"] = functionHolder{ schedulerStop };
     functionMap["report-util"] = functionHolder{ reportUtil };
-    functionMap["clear"] = functionHolder{ clear };
+    functionMap["clear"] = functionHolder{ clear };*/
 
     ConsoleManager::initialize();
 

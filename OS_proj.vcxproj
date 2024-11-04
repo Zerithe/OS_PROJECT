@@ -129,19 +129,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AConsole.cpp" />
+    <ClCompile Include="AScheduler.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="FCFSScheduler.cpp" />
+    <ClCompile Include="ICommand.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="OS_proj.cpp" />
+    <ClCompile Include="PrintCommand.cpp" />
+    <ClCompile Include="Process.cpp" />
     <ClCompile Include="ScreenConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
+    <ClInclude Include="AScheduler.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="FCFSScheduler.h" />
+    <ClInclude Include="ICommand.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="PrintCommand.h" />
+    <ClInclude Include="Process.h" />
     <ClInclude Include="ScreenConsole.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

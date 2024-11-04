@@ -9,7 +9,7 @@ PrintCommand::PrintCommand(int pid, std::string& toPrint) : ICommand(pid, PRINT)
 
 void PrintCommand::execute()
 {
-	ICommand::execute();
+	//ICommand::execute();
 
 	std::cout << "PID " << this->pid << ": " << this->toPrint << std::endl;
 }

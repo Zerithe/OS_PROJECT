@@ -12,6 +12,12 @@
     <Filter Include="Source Files\Console States">
       <UniqueIdentifier>{f773696e-ad59-4559-bf62-00c83248a5e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Commands">
+      <UniqueIdentifier>{069894d9-321a-41fc-bd94-8e7c47c469c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scheduler">
+      <UniqueIdentifier>{ceca3c79-f1fa-465f-92c6-08f633e1e699}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OS_proj.cpp">
@@ -35,6 +41,21 @@
     <ClCompile Include="ScreenConsole.cpp">
       <Filter>Source Files\Console States</Filter>
     </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICommand.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintCommand.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="AScheduler.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="FCFSScheduler.cpp">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleManager.h">
@@ -54,6 +75,21 @@
     </ClInclude>
     <ClInclude Include="ScreenConsole.h">
       <Filter>Source Files\Console States</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICommand.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintCommand.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="AScheduler.h">
+      <Filter>Source Files\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="FCFSScheduler.h">
+      <Filter>Source Files\Scheduler</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
