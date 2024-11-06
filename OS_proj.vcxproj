@@ -136,6 +136,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="MainConsole.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="OS_proj.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="RRScheduler.h" />

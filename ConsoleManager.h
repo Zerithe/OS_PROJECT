@@ -31,6 +31,7 @@ public:
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
 	void registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef);
 	void setNumRangeOfInstructions(int minInstructions, int maxInstructions);
+	void setMemoryPerProcess(int mem_per_proc);
 	void setBatchProcessFrequency(int batchProcessFreq);
 	void setScheduler(std::string scheduler);
 	void runSchedulerTest();
@@ -59,6 +60,7 @@ private:
 	bool schedulerTest = true;
 	int minInstructions;
 	int maxInstructions;
+	int memoryPerProcess;
 	int batchProcessFreq;
 	std::string scheduler;
 };

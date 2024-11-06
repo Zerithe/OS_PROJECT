@@ -6,7 +6,7 @@
 class Process
 {
 public:
-	Process(int pid, std::string name, int totalInstructions);
+	Process(int pid, std::string name, int totalInstructions, int memoryRequired);
 	~Process() = default;
 
 	enum ProcessState
@@ -29,6 +29,7 @@ public:
 	void setTimeStarted();
 	int getCommandCounter() const;
 	int getTotalInstructions() const;
+	int getTotalMemoryRequired() const;
 
 	std::string getName();
 private:
@@ -42,5 +43,6 @@ private:
 	std::string timeFinished;
 	std::string timeStarted;
 	ProcessState currentState = ProcessState::READY;
+	int memoryRequired;
 };
 

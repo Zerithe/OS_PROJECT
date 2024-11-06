@@ -60,7 +60,7 @@ void ConsoleManager::drawConsole()
 			this->exitApplication();
 		}
 		if (!mainConsole->getStringToRegister().empty()) {
-			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions);
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions, this->memoryPerProcess);
 			this->registerConsole(screenConsole);
 		}
 		if (!mainConsole->getStringToRead().empty()) {
@@ -169,6 +169,11 @@ void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstr
 	this->maxInstructions = maxInstructions;
 }
 
+void ConsoleManager::setMemoryPerProcess(int mem_per_proc)
+{
+	this->memoryPerProcess = mem_per_proc;
+}
+
 void ConsoleManager::setBatchProcessFrequency(int batchProcessFreq)
 {
 	this->batchProcessFreq = batchProcessFreq;
@@ -187,7 +192,7 @@ void ConsoleManager::runSchedulerTest()
 	while (this->schedulerTest) {
 		if (cpuCycle % batchProcessFreq == 0) {
 			const std::string processName = "p" + std::to_string(processNameCounter);
-			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(processName, this->minInstructions, this->maxInstructions);
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(processName, this->minInstructions, this->maxInstructions, this->memoryPerProcess);
 			this->registerConsoleForSchedulerTest(screenConsole);
 			processNameCounter++;
 		}

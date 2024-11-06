@@ -27,5 +27,6 @@ private:
 	std::string scheduler;
 	int quantumSlice;
 	bool preEmptedProcess = false;
+	int quantumCycle = 0;
 };
 

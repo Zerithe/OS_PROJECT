@@ -3,6 +3,7 @@
 #include "CPUCore.h"
 #include "ScreenConsole.h"
 #include "ConsoleManager.h"
+#include "MemoryManager.h"
 #include <thread>
 #include <memory>
 #include <fstream>
@@ -19,12 +20,27 @@ void RRScheduler::runRR()
 	while (this->running) {
 		for (std::shared_ptr<CPUCore> core : this->cores) {
 			if (!core->containsProcess() && !this->readyQueue.empty()) {
-				core->registerProcess(this->readyQueue.front());
-				this->readyQueue.pop();
-				this->coresUsed++;
+				if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+					core->registerProcess(this->readyQueue.front());
+					this->readyQueue.pop();
+					this->coresUsed++;
+				}
+				else if (MemoryManager::getInstance()->findMemory(this->readyQueue.front()) >= 0) { //If there is enough space in memory
+					MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front())); //Add the process first to memory before putting in CPU/core
+					core->registerProcess(this->readyQueue.front());
+					this->readyQueue.pop();
+					this->coresUsed++;
+				}
+				//Process reverts back to the tail of the ready queue if there is not enough space in memory
+				else { 
+					auto frontProcess = this->readyQueue.front();
+					this->readyQueue.pop();
+					this->addProcess(frontProcess);
+				}
 			}
 			if (core->containsProcess() && core->getIsFinished()) {
 				this->finishedList.push_back(core->getProcess());
+				MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
 				core->deallocateCPU();
 				this->coresUsed--;
 			}

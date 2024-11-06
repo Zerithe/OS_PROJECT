@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ConsoleManager.h"
+#include "MemoryManager.h"
 #include "FCFSScheduler.h"
 #include "RRScheduler.h"
 #include "CPUCore.h"
@@ -80,6 +81,9 @@ int main()
     int minInstructions;
     int maxInstructions;
     int delayPerExecution;
+    int maxMemory;
+    int memoryPerFrame;
+    int memoryPerProcess;
 
     // Vector to hold shared pointers to CPUCore objects
     std::vector<std::shared_ptr<CPUCore>> cpuCores;
@@ -137,6 +141,15 @@ int main()
         else if (line.find("delay-per-exec") != std::string::npos) {
             iss >> key >> delayPerExecution;
         }
+        else if (line.find("max-overall-mem") != std::string::npos) {
+            iss >> key >> maxMemory;
+        }
+        else if (line.find("mem-per-frame") != std::string::npos) {
+            iss >> key >> memoryPerFrame;
+        }
+        else if (line.find("mem-per-proc") != std::string::npos) {
+            iss >> key >> memoryPerProcess;
+        }
     }
 
     // Close the file
@@ -154,6 +167,11 @@ int main()
     ConsoleManager::getInstance()->setNumRangeOfInstructions(minInstructions, maxInstructions);
     ConsoleManager::getInstance()->setBatchProcessFrequency(batchProcessFreq);
     ConsoleManager::getInstance()->setScheduler(scheduler);
+    ConsoleManager::getInstance()->setMemoryPerProcess(memoryPerProcess);
+
+    MemoryManager::initialize();
+    MemoryManager::getInstance()->setMaxMemory(maxMemory);
+    MemoryManager::getInstance()->setMemoryPerFrame(memoryPerFrame);
     if (scheduler == "fcfs") {
         FCFSScheduler::initialize();
     }
@@ -232,6 +250,7 @@ int main()
     }
 
     ConsoleManager::destroy();
+    MemoryManager::destroy();
     if (scheduler == "fcfs")
         FCFSScheduler::destroy();
     else

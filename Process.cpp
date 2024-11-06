@@ -3,11 +3,12 @@
 #include <fstream>
 #include <chrono>
 
-Process::Process(int pid, std::string name, int totalInstructions)
+Process::Process(int pid, std::string name, int totalInstructions, int memoryRequired)
 {
     this->pid = pid;
     this->name = name;
     this->totalInstructions = totalInstructions;
+    this->memoryRequired = memoryRequired;
     addCommand(ICommand::CommandType::PRINT);
 }
 
@@ -119,6 +120,11 @@ int Process::getCommandCounter() const
 int Process::getTotalInstructions() const
 {
     return this->totalInstructions;
+}
+
+int Process::getTotalMemoryRequired() const
+{
+    return this->memoryRequired;
 }
 
 std::string Process::getName()

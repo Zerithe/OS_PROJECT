@@ -1,4 +1,5 @@
 #include "CPUCore.h"
+#include "MemoryManager.h"
 #include <memory>
 #include <thread>
 
@@ -17,14 +18,18 @@ void CPUCore::runCPU()
 		if (this->process != nullptr && !this->finishedProcess && !this->preEmptedProcess) {
 			if (this->scheduler == "rr" && this->cpuCycle >= this->quantumSlice) {
 				this->preEmptedProcess = true;
+				this->quantumCycle++;
+				MemoryManager::getInstance()->printMemory(this->id, this->quantumCycle);
 			}
 			else if (this->cpuCycle % (delayPerExecution + 1) == 0 && !this->process->isFinished() && !this->preEmptedProcess) { //check if the process is not yet finished and the delay is over
 				this->process->executeCurrentCommand();
 				this->process->moveToNextLine();
 				
 			}
-			if (this->process->isFinished()) {
-				this->finishedProcess = true;
+			if (this->process != nullptr) {
+				if (this->process->isFinished()) {
+					this->finishedProcess = true;
+				}
 			}
 			this->cpuCycle++;
 		}
