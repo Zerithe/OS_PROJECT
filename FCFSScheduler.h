@@ -24,6 +24,7 @@ public:
 	std::unordered_map<std::string, int> getRunningProcesses() const;
 	int getTotalIdleCPUTicks() const;
 	int getTotalActiveCPUTicks() const;
+	void setMemoryAllocator(std::string mem_allocator);
 	static FCFSScheduler* getInstance();
 	static void initialize();
 	static void destroy();

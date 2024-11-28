@@ -208,6 +208,11 @@ int RRScheduler::getTotalActiveCPUTicks() const
 	return totalActiveCPUTicks;
 }
 
+void RRScheduler::setMemoryAllocator(std::string mem_allocator)
+{
+	this->memory_allocator = mem_allocator;
+}
+
 RRScheduler* RRScheduler::getInstance()
 {
 	if (sharedInstance == nullptr)

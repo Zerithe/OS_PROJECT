@@ -197,6 +197,11 @@ int FCFSScheduler::getTotalActiveCPUTicks() const
 	return totalActiveCPUTicks;
 }
 
+void FCFSScheduler::setMemoryAllocator(std::string mem_allocator)
+{
+	this->memory_allocator = mem_allocator;
+}
+
 FCFSScheduler* FCFSScheduler::getInstance()
 {
 	if (sharedInstance == nullptr)

@@ -24,11 +24,6 @@ public:
 	void process_smi();
 	void vmstat();
 	bool isProcessInMemory(std::shared_ptr<Process> process);
-	void addProcessToMemory(std::shared_ptr<Process> process, int startMemoryAddress);
-	void deallocateProcessFromMemory(std::shared_ptr<Process> process);
-	int getTotalExternalFragmentation() const;
-	void printMemory(int cpuNo, int quantumCycle);
-	std::string getDateNow();
 
 private:
 	PagingAllocator();
