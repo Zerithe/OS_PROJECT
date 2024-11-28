@@ -24,7 +24,10 @@ void RRScheduler::runRR()
 		while (this->running) {
 			for (std::shared_ptr<CPUCore> core : this->cores) {
 				if (!core->containsProcess() && !this->readyQueue.empty()) {
-					if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+					if (this->readyQueue.front()->getInBackingStore()) { //If the process was already placed in the backing store
+						this->readyQueue.pop();
+					}
+					else if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
 						core->registerProcess(this->readyQueue.front());
 						this->readyQueue.pop();
 						this->coresUsed++;
@@ -38,9 +41,18 @@ void RRScheduler::runRR()
 					//Process reverts back to the tail of the ready queue if there is not enough space in memory
 					//TODO: Implement backing store
 					else {
-						auto frontProcess = this->readyQueue.front();
-						this->readyQueue.pop();
-						this->addProcess(frontProcess);
+						bool performBackingStore = true;
+						for (std::shared_ptr<CPUCore> cpuCore : this->cores) {
+							if (MemoryManager::getInstance()->getOldestProcessInMemory() == cpuCore->getProcess())
+								performBackingStore = false;
+						}
+						if (performBackingStore) {
+							this->putProcessToBackingStore(MemoryManager::getInstance()->getOldestProcessInMemory());
+							MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front()));
+							core->registerProcess(this->readyQueue.front());
+							this->readyQueue.pop();
+							this->coresUsed++;
+						}
 					}
 				}
 				if (core->containsProcess() && core->getIsFinished()) {
@@ -48,6 +60,8 @@ void RRScheduler::runRR()
 					MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
 					core->deallocateCPU();
 					this->coresUsed--;
+					if (!this->isBackingStoreEmpty)
+						this->returnProcessFromBackingStore();
 				}
 				if (core->containsProcess() && core->getIsPreEmpted()) {
 					this->addProcess(core->getProcess());
@@ -61,7 +75,10 @@ void RRScheduler::runRR()
 		while (this->running) {
 			for (std::shared_ptr<CPUCore> core : this->cores) {
 				if (!core->containsProcess() && !this->readyQueue.empty()) {
-					if (PagingAllocator::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+					if (this->readyQueue.front()->getInBackingStore()) { //If the process was already placed in the backing store
+						this->readyQueue.pop();
+					}
+					else if (PagingAllocator::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
 						core->registerProcess(this->readyQueue.front());
 						this->readyQueue.pop();
 						this->coresUsed++;
@@ -74,9 +91,18 @@ void RRScheduler::runRR()
 					//Process reverts back to the tail of the ready queue if there is not enough space in memory
 					//TODO: Implement backing store
 					else {
-						auto frontProcess = this->readyQueue.front();
-						this->readyQueue.pop();
-						this->addProcess(frontProcess);
+						bool performBackingStore = true;
+						for (std::shared_ptr<CPUCore> cpuCore : this->cores) {
+							if (PagingAllocator::getInstance()->getOldestProcessInMemory() == cpuCore->getProcess())
+								performBackingStore = false;
+						}
+						if (performBackingStore) {
+							this->putProcessToBackingStore(PagingAllocator::getInstance()->getOldestProcessInMemory());
+							PagingAllocator::getInstance()->allocate(this->readyQueue.front());
+							core->registerProcess(this->readyQueue.front());
+							this->readyQueue.pop();
+							this->coresUsed++;
+						}
 					}
 				}
 				if (core->containsProcess() && core->getIsFinished()) {
@@ -84,6 +110,8 @@ void RRScheduler::runRR()
 					PagingAllocator::getInstance()->deallocate(core->getProcess()); //Remove process from memory when finished
 					core->deallocateCPU();
 					this->coresUsed--;
+					if (!this->isBackingStoreEmpty)
+						this->returnProcessFromBackingStore();
 				}
 				if (core->containsProcess() && core->getIsPreEmpted()) {
 					this->addProcess(core->getProcess());
@@ -228,6 +256,7 @@ void RRScheduler::putProcessToBackingStore(std::shared_ptr<Process> process)
 		outfile << "commandCounter " << process->getCommandCounter() << "\n";
 		outfile.close();
 	}
+	this->isBackingStoreEmpty = false;
 }
 
 void RRScheduler::returnProcessFromBackingStore()
@@ -277,20 +306,14 @@ void RRScheduler::returnProcessFromBackingStore()
 		MemoryManager::getInstance()->addProcessToMemory(screenConsole->getProcess(), MemoryManager::getInstance()->findMemory(screenConsole->getProcess()));
 	else
 		PagingAllocator::getInstance()->allocate(screenConsole->getProcess());
+	this->isBackingStoreEmpty = true;
 }
 
-void RRScheduler::removeProcessFromRQ(std::shared_ptr<Process> processToRemove)
+void RRScheduler::setMemoryAllocator(std::string mem_allocator)
 {
-	// Find and remove the process from the vector
-	auto it = std::find(processes.begin(), processes.end(), processToRemove);
-	if (it != processes.end()) {
-		processes.erase(it);
-		std::cout << "Process removed from vector." << std::endl;
-	}
-	else {
-		std::cerr << "Process not found in vector!" << std::endl;
-	}
+	this->memory_allocator = mem_allocator;
 }
+
 
 RRScheduler* RRScheduler::getInstance()
 {

@@ -80,6 +80,7 @@ void MemoryManager::addProcessToMemory(std::shared_ptr<Process> process, int sta
 {
 	const int endMemoryAddress = startMemoryAddress + process->getTotalMemoryRequired();
 	this->processInMemoryList.push_back({ process->getName(), startMemoryAddress, endMemoryAddress });
+	this->processesInMemory.push_back(process);
 	std::sort(processInMemoryList.begin(), processInMemoryList.end(), [](const ProcessWithMemory& a, const ProcessWithMemory& b) {
 		return a.memoryStart < b.memoryStart;
 		});
@@ -104,6 +105,8 @@ void MemoryManager::deallocateProcessFromMemory(std::shared_ptr<Process> process
 			return processWithMemory.processName == process->getName();
 		}),
 		processInMemoryList.end());
+
+	this->removeProcFromProcInMemList(process);
 }
 
 int MemoryManager::getTotalExternalFragmentation() const
@@ -225,4 +228,23 @@ std::string MemoryManager::getDateNow()
 
 	// Store formatted time in creationTime
 	return oss.str();
+}
+
+void MemoryManager::removeProcFromProcInMemList(std::shared_ptr<Process> process)
+{
+	processesInMemory.erase(
+		std::remove_if(
+			processesInMemory.begin(),
+			processesInMemory.end(),
+			[process](std::shared_ptr<Process> processToCompare) {
+				return processToCompare == process; // Compare the shared_ptr directly
+			}
+		),
+		processesInMemory.end()
+	);
+}
+
+std::shared_ptr<Process> MemoryManager::getOldestProcessInMemory() const
+{
+	return processesInMemory[0];
 }

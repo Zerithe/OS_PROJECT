@@ -63,7 +63,7 @@ bool PagingAllocator::allocate(std::shared_ptr<Process> process)
 		return false;
 	}
 	allocateFrames(numFramesNeeded, processName);
-	this->processInMemoryQueue.push(process);
+	this->processInMemoryList.push_back(process);
 	return true;
 }
 
@@ -87,6 +87,7 @@ void PagingAllocator::deallocate(std::shared_ptr<Process> process)
 		}
 	}
 	deallocateFrames(frameIndexes);
+	this->removeProcFromProcInMemList(process);
 }
 
 void PagingAllocator::deallocateFrames(std::vector<int> frames)
@@ -99,6 +100,20 @@ void PagingAllocator::deallocateFrames(std::vector<int> frames)
 			this->num_paged_out += 1;
 		}
 	}
+}
+
+void PagingAllocator::removeProcFromProcInMemList(std::shared_ptr<Process> process)
+{
+	processInMemoryList.erase(
+		std::remove_if(
+			processInMemoryList.begin(),
+			processInMemoryList.end(),
+			[process](std::shared_ptr<Process> processToCompare) {
+				return processToCompare == process; // Compare the shared_ptr directly
+			}
+		),
+		processInMemoryList.end()
+	);
 }
 
 void PagingAllocator::process_smi()
@@ -173,4 +188,9 @@ bool PagingAllocator::isProcessInMemory(std::shared_ptr<Process> process)
 		}
 	}
 	return false;
+}
+
+std::shared_ptr<Process> PagingAllocator::getOldestProcessInMemory() const
+{
+	return processInMemoryList[0];
 }

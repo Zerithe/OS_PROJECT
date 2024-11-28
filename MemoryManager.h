@@ -32,6 +32,8 @@ public:
 	void process_smi();
 	void vmstat();
 	std::string getDateNow();
+	void removeProcFromProcInMemList(std::shared_ptr<Process> process);
+	std::shared_ptr<Process> getOldestProcessInMemory() const;
 
 private:
 	MemoryManager();
@@ -41,7 +43,7 @@ private:
 	static MemoryManager* sharedInstance;
 
 	ProcessInMemoryList processInMemoryList;
-	std::queue <std::shared_ptr<Process>> processInMemoryQueue;
+	std::vector<std::shared_ptr<Process>> processesInMemory;
 	int max_mem;
 	int mem_per_frame;
 	std::string scheduler;

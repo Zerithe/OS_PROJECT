@@ -199,9 +199,17 @@ int main()
     }
     if (scheduler == "fcfs") {
         FCFSScheduler::initialize();
+        if (maxMemory == memoryPerFrame)
+            FCFSScheduler::getInstance()->setMemoryAllocator("flat");
+        else
+            FCFSScheduler::getInstance()->setMemoryAllocator("paging");
     }
     else {
         RRScheduler::initialize();
+        if (maxMemory == memoryPerFrame)
+            RRScheduler::getInstance()->setMemoryAllocator("flat");
+        else
+            RRScheduler::getInstance()->setMemoryAllocator("paging");
     }
 
     // Create CPU cores dynamically based on numCPU and start threads

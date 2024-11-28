@@ -26,7 +26,7 @@ public:
 	int getTotalActiveCPUTicks() const;
 	void putProcessToBackingStore(std::shared_ptr<Process> process);
 	void returnProcessFromBackingStore();
-	void removeProcessFromRQ(std::shared_ptr<Process> processToRemove);
+	void setMemoryAllocator(std::string mem_allocator);
 	static RRScheduler* getInstance();
 	static void initialize();
 	static void destroy();

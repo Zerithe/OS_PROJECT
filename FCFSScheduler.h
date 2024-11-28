@@ -26,6 +26,7 @@ public:
 	int getTotalActiveCPUTicks() const;
 	void putProcessToBackingStore(std::shared_ptr<Process> process);
 	void returnProcessFromBackingStore();
+	void setMemoryAllocator(std::string mem_allocator);
 	static FCFSScheduler* getInstance();
 	static void initialize();
 	static void destroy();

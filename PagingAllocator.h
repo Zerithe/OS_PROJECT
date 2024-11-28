@@ -21,15 +21,11 @@ public:
 	void allocateFrames(int numFramesNeeded, std::string processName);
 	void deallocate(std::shared_ptr<Process> process);
 	void deallocateFrames(std::vector<int> frames);
+	void removeProcFromProcInMemList(std::shared_ptr<Process> process);
 	void process_smi();
 	void vmstat();
 	bool isProcessInMemory(std::shared_ptr<Process> process);
-
-	void addProcessToMemory(std::shared_ptr<Process> process, int startMemoryAddress);
-	void deallocateProcessFromMemory(std::shared_ptr<Process> process);
-	int getTotalExternalFragmentation() const;
-	void printMemory(int cpuNo, int quantumCycle);
-	std::string getDateNow();
+	std::shared_ptr<Process> getOldestProcessInMemory() const;
 
 private:
 	PagingAllocator();
@@ -39,7 +35,7 @@ private:
 	static PagingAllocator* sharedInstance;
 	std::unordered_map<int, std::string> frameMap;
 	std::queue<int> freeFrameList;
-	std::queue<std::shared_ptr<Process>> processInMemoryQueue;
+	std::vector<std::shared_ptr<Process>> processInMemoryList;
 	int max_mem;
 	int mem_per_frame;
 	std::string scheduler;
