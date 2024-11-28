@@ -6,7 +6,7 @@
 class Process
 {
 public:
-	Process(int pid, std::string name, int totalInstructions, int memoryRequired, int memPerFrame);
+	Process(int pid, std::string name, int totalInstructions, int memoryRequired, int memPerFrame, int commandCounter);
 	~Process() = default;
 
 	enum ProcessState
@@ -31,7 +31,9 @@ public:
 	int getTotalInstructions() const;
 	int getTotalMemoryRequired() const;
 	int getNumberOfPages() const;
-
+	int getMemPerFrame() const;
+	void setInBackingStore(bool value);
+	bool getInBackingStore() const;
 	std::string getName();
 private:
 	std::string name;
@@ -46,5 +48,6 @@ private:
 	ProcessState currentState = ProcessState::READY;
 	int memoryRequired;
 	int memPerFrame;
+	bool inBackingStore = false;
 };
 

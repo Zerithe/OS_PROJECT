@@ -18,7 +18,14 @@ ScreenConsole::ScreenConsole(String name, int minInstructions, int maxInstructio
     std::uniform_int_distribution<> distr1(minInstructions, maxInstructions);
     int id = generateUniqueInt();
     int totalInstructions = distr1(gen);
-    this->linkedProcess = std::make_shared<Process>(id, name, totalInstructions, memoryRequired, memPerFrame);
+    this->linkedProcess = std::make_shared<Process>(id, name, totalInstructions, memoryRequired, memPerFrame, 0);
+    initializeCreationTime();
+}
+
+ScreenConsole::ScreenConsole(int pid, String name, int totalInstructions, int memoryRequired, int memPerFrame, int commandCounter) : AConsole(name)
+{
+    this->name = name;
+    this->linkedProcess = std::make_shared<Process>(pid, name, totalInstructions, memoryRequired, memPerFrame, commandCounter);
     initializeCreationTime();
 }
 

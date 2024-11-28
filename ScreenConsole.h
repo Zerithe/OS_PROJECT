@@ -7,6 +7,7 @@ class ScreenConsole : public AConsole
 {
 public:
 	ScreenConsole(String name, int minInstructions, int maxInstructions, int memoryRequired, int memPerFrame);
+	ScreenConsole(int pid, String name, int totalInstructions, int memoryRequired, int memPerFrame, int commandCounter);
 
 	void onEnabled() override;
 	void offEnabled() override;

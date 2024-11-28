@@ -21,9 +21,11 @@ public:
 	void allocateFrames(int numFramesNeeded, std::string processName);
 	void deallocate(std::shared_ptr<Process> process);
 	void deallocateFrames(std::vector<int> frames);
+	void removeProcFromProcInMemList(std::shared_ptr<Process> process);
 	void process_smi();
 	void vmstat();
 	bool isProcessInMemory(std::shared_ptr<Process> process);
+	std::shared_ptr<Process> getOldestProcessInMemory() const;
 
 private:
 	PagingAllocator();
@@ -33,10 +35,10 @@ private:
 	static PagingAllocator* sharedInstance;
 	std::unordered_map<int, std::string> frameMap;
 	std::queue<int> freeFrameList;
+	std::vector<std::shared_ptr<Process>> processInMemoryList;
 	int max_mem;
 	int mem_per_frame;
 	std::string scheduler;
 	int num_paged_in = 0;
 	int num_paged_out = 0;
 };
-

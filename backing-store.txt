@@ -1,0 +1,6 @@
+pid -2034733507
+processName p1
+totalInstructions 100
+memoryRequired 512
+memPerFrame 512
+commandCounter 65
