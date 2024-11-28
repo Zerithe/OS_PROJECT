@@ -196,6 +196,19 @@ void ConsoleManager::registerConsole(std::shared_ptr<ScreenConsole> screenRef)
 		RRScheduler::getInstance()->addProcess(screenRef->getProcess());
 }
 
+void ConsoleManager::unregisterConsole(std::string name)
+{
+	auto it = this->consoleTable.find(name);
+	if (it != this->consoleTable.end())
+	{
+		this->consoleTable.erase(it);
+	}
+	else
+	{
+		std::cerr << "Console with name " << name << " does not exist." << std::endl;
+	}
+}
+
 void ConsoleManager::registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef)
 {
 	if (this->consoleTable.contains(screenRef->getName()))

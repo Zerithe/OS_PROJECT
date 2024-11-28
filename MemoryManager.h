@@ -4,6 +4,7 @@
 #include <iostream>
 #include "ScreenConsole.h"
 #include "Process.h"
+#include <queue>
 
 struct ProcessWithMemory {
 	std::string processName;
@@ -40,6 +41,7 @@ private:
 	static MemoryManager* sharedInstance;
 
 	ProcessInMemoryList processInMemoryList;
+	std::queue <std::shared_ptr<Process>> processInMemoryQueue;
 	int max_mem;
 	int mem_per_frame;
 	std::string scheduler;

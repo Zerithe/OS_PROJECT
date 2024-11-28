@@ -5,8 +5,10 @@
 #include "ConsoleManager.h"
 #include "MemoryManager.h"
 #include "PagingAllocator.h"
+#include "ScreenConsole.h"
 #include <thread>
 #include <memory>
+#include <fstream>
 
 FCFSScheduler* FCFSScheduler::sharedInstance = nullptr;
 
@@ -195,6 +197,25 @@ int FCFSScheduler::getTotalActiveCPUTicks() const
 		totalActiveCPUTicks += core->getActiveCPUTicks();
 	}
 	return totalActiveCPUTicks;
+}
+
+void FCFSScheduler::putProcessToBackingStore(std::shared_ptr<Process> process)
+{
+	std::ofstream outfile("backing-store.txt");
+	if (outfile.is_open()) {
+		outfile << "pid " << process->getProcessID() << "\n";
+		outfile << "processName " << process->getName() << "\n";
+		outfile << "totalInstructions " << process->getTotalInstructions() << "\n";
+		outfile << "memoryRequired " << process->getTotalMemoryRequired() << "\n";
+		outfile << "memPerFrame " << process->getMemPerFrame() << "\n";
+		outfile << "commandCounter " << process->getCommandCounter() << "\n";
+		outfile.close();
+	}
+}
+
+void FCFSScheduler::returnProcessFromBackingStore()
+{
+
 }
 
 FCFSScheduler* FCFSScheduler::getInstance()

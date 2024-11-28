@@ -63,6 +63,7 @@ bool PagingAllocator::allocate(std::shared_ptr<Process> process)
 		return false;
 	}
 	allocateFrames(numFramesNeeded, processName);
+	this->processInMemoryQueue.push(process);
 	return true;
 }
 

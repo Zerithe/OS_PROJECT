@@ -24,6 +24,8 @@ public:
 	std::unordered_map<std::string, int> getRunningProcesses() const;
 	int getTotalIdleCPUTicks() const;
 	int getTotalActiveCPUTicks() const;
+	void putProcessToBackingStore(std::shared_ptr<Process> process);
+	void returnProcessFromBackingStore();
 	static FCFSScheduler* getInstance();
 	static void initialize();
 	static void destroy();
@@ -40,5 +42,6 @@ private:
 	bool running = true;
 	int coresUsed = 0;
 	std::string memory_allocator;
+	bool isBackingStoreEmpty = true;
 };
 

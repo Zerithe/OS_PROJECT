@@ -29,6 +29,7 @@ public:
 	void exitApplication();
 
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
+	void unregisterConsole(std::string name);
 	void registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef);
 	void setNumRangeOfInstructions(int minInstructions, int maxInstructions);
 	void setMinMemoryPerProcess(int mem_per_proc);

@@ -24,6 +24,7 @@ public:
 	void process_smi();
 	void vmstat();
 	bool isProcessInMemory(std::shared_ptr<Process> process);
+
 	void addProcessToMemory(std::shared_ptr<Process> process, int startMemoryAddress);
 	void deallocateProcessFromMemory(std::shared_ptr<Process> process);
 	int getTotalExternalFragmentation() const;
@@ -38,6 +39,7 @@ private:
 	static PagingAllocator* sharedInstance;
 	std::unordered_map<int, std::string> frameMap;
 	std::queue<int> freeFrameList;
+	std::queue<std::shared_ptr<Process>> processInMemoryQueue;
 	int max_mem;
 	int mem_per_frame;
 	std::string scheduler;
