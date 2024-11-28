@@ -10,6 +10,7 @@
 
 #include "ConsoleManager.h"
 #include "MemoryManager.h"
+#include "PagingAllocator.h"
 #include "FCFSScheduler.h"
 #include "RRScheduler.h"
 #include "CPUCore.h"
@@ -83,7 +84,8 @@ int main()
     int delayPerExecution;
     int maxMemory;
     int memoryPerFrame;
-    int memoryPerProcess;
+    int minMemoryPerProcess;
+    int maxMemoryPerProcess;
 
     // Vector to hold shared pointers to CPUCore objects
     std::vector<std::shared_ptr<CPUCore>> cpuCores;
@@ -147,8 +149,11 @@ int main()
         else if (line.find("mem-per-frame") != std::string::npos) {
             iss >> key >> memoryPerFrame;
         }
-        else if (line.find("mem-per-proc") != std::string::npos) {
-            iss >> key >> memoryPerProcess;
+        else if (line.find("min-mem-per-proc") != std::string::npos) {
+            iss >> key >> minMemoryPerProcess;
+        }
+        else if (line.find("max-mem-per-proc") != std::string::npos) {
+            iss >> key >> maxMemoryPerProcess;
         }
     }
 
@@ -167,11 +172,31 @@ int main()
     ConsoleManager::getInstance()->setNumRangeOfInstructions(minInstructions, maxInstructions);
     ConsoleManager::getInstance()->setBatchProcessFrequency(batchProcessFreq);
     ConsoleManager::getInstance()->setScheduler(scheduler);
-    ConsoleManager::getInstance()->setMemoryPerProcess(memoryPerProcess);
+    ConsoleManager::getInstance()->setMinMemoryPerProcess(minMemoryPerProcess);
+    ConsoleManager::getInstance()->setMaxMemoryPerProcess(maxMemoryPerProcess);
+    ConsoleManager::getInstance()->setMemPerFrame(memoryPerFrame);
 
-    MemoryManager::initialize();
-    MemoryManager::getInstance()->setMaxMemory(maxMemory);
-    MemoryManager::getInstance()->setMemoryPerFrame(memoryPerFrame);
+    if (maxMemory == memoryPerFrame) {
+        MemoryManager::initialize();
+        MemoryManager::getInstance()->setMaxMemory(maxMemory);
+        MemoryManager::getInstance()->setMemoryPerFrame(memoryPerFrame);
+        ConsoleManager::getInstance()->setMemoryAllocator("flat");
+        if (scheduler == "fcfs")
+            MemoryManager::getInstance()->setScheduler("fcfs");
+        else
+            MemoryManager::getInstance()->setScheduler("rr");
+    }
+    else {
+        PagingAllocator::initialize();
+        PagingAllocator::getInstance()->setMaxMemory(maxMemory);
+        PagingAllocator::getInstance()->setMemoryPerFrame(memoryPerFrame);
+        PagingAllocator::getInstance()->populateFreeFrameList();
+        ConsoleManager::getInstance()->setMemoryAllocator("paging");
+        if (scheduler == "fcfs")
+            PagingAllocator::getInstance()->setScheduler("fcfs");
+        else
+            PagingAllocator::getInstance()->setScheduler("rr");
+    }
     if (scheduler == "fcfs") {
         FCFSScheduler::initialize();
     }
@@ -250,7 +275,10 @@ int main()
     }
 
     ConsoleManager::destroy();
-    MemoryManager::destroy();
+    if (maxMemory == memoryPerFrame)
+        MemoryManager::destroy();
+    else
+        PagingAllocator::destroy();
     if (scheduler == "fcfs")
         FCFSScheduler::destroy();
     else

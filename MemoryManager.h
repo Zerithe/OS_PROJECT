@@ -21,12 +21,15 @@ public:
 
 	void setMaxMemory(int max_mem);
 	void setMemoryPerFrame(int mem_per_frame);
+	void setScheduler(std::string scheduler);
 	int findMemory(std::shared_ptr<Process> process);
 	void addProcessToMemory(std::shared_ptr<Process> process, int startMemoryAddress);
 	bool isProcessInMemory(std::shared_ptr<Process> process);
 	void deallocateProcessFromMemory(std::shared_ptr<Process> process);
 	int getTotalExternalFragmentation() const;
 	void printMemory(int cpuNo, int quantumCycle);
+	void process_smi();
+	void vmstat();
 	std::string getDateNow();
 
 private:
@@ -39,5 +42,6 @@ private:
 	ProcessInMemoryList processInMemoryList;
 	int max_mem;
 	int mem_per_frame;
+	std::string scheduler;
 };
 

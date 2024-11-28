@@ -17,6 +17,8 @@ public:
 	bool getIsPreEmpted();
 	void deallocateCPU();
 	void stop();
+	int getIdleCPUTicks() const;
+	int getActiveCPUTicks() const;
 private:
 	int id;
 	std::shared_ptr<Process> process = nullptr;
@@ -28,5 +30,7 @@ private:
 	int quantumSlice;
 	bool preEmptedProcess = false;
 	int quantumCycle = 0;
+	int idleCPUTicks = 0;
+	int activeCPUTicks = 0;
 };
 

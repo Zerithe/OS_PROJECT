@@ -1,7 +1,10 @@
 #include "MemoryManager.h"
+#include "FCFSScheduler.h"
+#include "RRScheduler.h"
 #include <fstream>
 #include <chrono>
 #include <algorithm>
+#include <unordered_map>
 
 MemoryManager* MemoryManager::sharedInstance = nullptr;
 
@@ -42,6 +45,11 @@ void MemoryManager::setMaxMemory(int max_mem)
 void MemoryManager::setMemoryPerFrame(int mem_per_frame)
 {
 	this->mem_per_frame = mem_per_frame;
+}
+
+void MemoryManager::setScheduler(std::string scheduler)
+{
+	this->scheduler = scheduler;
 }
 
 int MemoryManager::findMemory(std::shared_ptr<Process> process)
@@ -135,6 +143,69 @@ void MemoryManager::printMemory(int cpuNo, int quantumCycle)
 		outfile << "----start---- = 0" << "\n";
 		outfile.close();
 	}
+}
+
+void MemoryManager::process_smi()
+{
+	float cpuUtilization;
+	int memoryUsed = this->max_mem - this->getTotalExternalFragmentation();
+	float memoryUtilization = (memoryUsed / static_cast<float>(this->max_mem)) * 100;
+	std::unordered_map<std::string, int> runningProcesses;
+	if (this->scheduler == "fcfs") {
+		cpuUtilization = (FCFSScheduler::getInstance()->getCoresUsed() / static_cast<float>(FCFSScheduler::getInstance()->getNoOfCores())) * 100;
+		runningProcesses = FCFSScheduler::getInstance()->getRunningProcesses();
+	}
+	else {
+		cpuUtilization = (RRScheduler::getInstance()->getCoresUsed() / static_cast<float>(RRScheduler::getInstance()->getNoOfCores())) * 100;
+		runningProcesses = RRScheduler::getInstance()->getRunningProcesses();
+	}
+	for (int i = 0; i < 15; ++i) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+	std::cout << "CPU-Util: " << cpuUtilization << "%" << std::endl;
+	std::cout << "Memory Usage: " << memoryUsed << "MiB / " << this->max_mem << "MiB" << std::endl;
+	std::cout << "Memory Util: " << memoryUtilization << "%" << std::endl;
+	std::cout << std::endl;
+	for (int i = 0; i < 15; ++i) {
+		std::cout << "=";
+	}
+	std::cout << std::endl;
+	std::cout << "Running processes and memory usage:" << std::endl;
+	for (int i = 0; i < 15; ++i) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+	for (const auto& pair : runningProcesses) {
+		std::cout << pair.first << " " << pair.second << "MiB" << "\n";
+	}
+	for (int i = 0; i < 15; ++i) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+}
+
+void MemoryManager::vmstat()
+{
+	int totalIdleCPUTicks;
+	int totalActiveCPUTicks;
+	if (this->scheduler == "fcfs") {
+		totalIdleCPUTicks = FCFSScheduler::getInstance()->getTotalIdleCPUTicks();
+		totalActiveCPUTicks = FCFSScheduler::getInstance()->getTotalActiveCPUTicks();
+	}
+	else {
+		totalIdleCPUTicks = RRScheduler::getInstance()->getTotalIdleCPUTicks();
+		totalActiveCPUTicks = RRScheduler::getInstance()->getTotalActiveCPUTicks();
+	}
+	int memoryUsed = this->max_mem - this->getTotalExternalFragmentation();
+	std::cout << this->max_mem << " MiB total memory" << std::endl;
+	std::cout << memoryUsed << " MiB used memory" << std::endl;
+	std::cout << this->max_mem - memoryUsed << " MiB free memory" << std::endl;
+	std::cout << totalIdleCPUTicks << " Idle CPU ticks" << std::endl;
+	std::cout << totalActiveCPUTicks << " Active CPU ticks" << std::endl;
+	std::cout << totalIdleCPUTicks + totalActiveCPUTicks << " Total CPU ticks" << std::endl;
+	std::cout << "0 pages paged in" << std::endl;
+	std::cout << "0 pages paged out" << std::endl;
 }
 
 std::string MemoryManager::getDateNow()

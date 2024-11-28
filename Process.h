@@ -6,7 +6,7 @@
 class Process
 {
 public:
-	Process(int pid, std::string name, int totalInstructions, int memoryRequired);
+	Process(int pid, std::string name, int totalInstructions, int memoryRequired, int memPerFrame);
 	~Process() = default;
 
 	enum ProcessState
@@ -30,6 +30,7 @@ public:
 	int getCommandCounter() const;
 	int getTotalInstructions() const;
 	int getTotalMemoryRequired() const;
+	int getNumberOfPages() const;
 
 	std::string getName();
 private:
@@ -44,5 +45,6 @@ private:
 	std::string timeStarted;
 	ProcessState currentState = ProcessState::READY;
 	int memoryRequired;
+	int memPerFrame;
 };
 

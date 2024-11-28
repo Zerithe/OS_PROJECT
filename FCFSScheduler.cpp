@@ -4,6 +4,7 @@
 #include "ScreenConsole.h"
 #include "ConsoleManager.h"
 #include "MemoryManager.h"
+#include "PagingAllocator.h"
 #include <thread>
 #include <memory>
 
@@ -18,32 +19,65 @@ FCFSScheduler::FCFSScheduler()
 
 void FCFSScheduler::runFCFS()
 {
-	while (this->running) {
-		for (std::shared_ptr<CPUCore> core: this->cores) {
-			if (!core->containsProcess() && !this->readyQueue.empty()) {
-				if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
-					core->registerProcess(this->readyQueue.front());
-					this->readyQueue.pop();
-					this->coresUsed++;
+	if (this->memory_allocator == "flat") {
+		while (this->running) {
+			for (std::shared_ptr<CPUCore> core : this->cores) {
+				if (!core->containsProcess() && !this->readyQueue.empty()) {
+					if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					else if (MemoryManager::getInstance()->findMemory(this->readyQueue.front()) >= 0) { //If there is enough space in memory
+						MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front())); //Add the process first to memory before putting in CPU/core
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					//Process reverts back to the tail of the ready queue if there is not enough space in memory
+					else {
+						auto frontProcess = this->readyQueue.front();
+						this->readyQueue.pop();
+						this->addProcess(frontProcess);
+					}
 				}
-				else if (MemoryManager::getInstance()->findMemory(this->readyQueue.front()) >= 0) { //If there is enough space in memory
-					MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front())); //Add the process first to memory before putting in CPU/core
-					core->registerProcess(this->readyQueue.front());
-					this->readyQueue.pop();
-					this->coresUsed++;
-				}
-				//Process reverts back to the tail of the ready queue if there is not enough space in memory
-				else {
-					auto frontProcess = this->readyQueue.front();
-					this->readyQueue.pop();
-					this->addProcess(frontProcess);
+				if (core->containsProcess() && core->getIsFinished()) {
+					this->finishedList.push_back(core->getProcess());
+					MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
+					core->deallocateCPU();
+					this->coresUsed--;
 				}
 			}
-			if (core->containsProcess() && core->getIsFinished()) {
-				this->finishedList.push_back(core->getProcess());
-				MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
-				core->deallocateCPU();
-				this->coresUsed--;
+		}
+	}
+	else {
+		while (this->running) {
+			for (std::shared_ptr<CPUCore> core : this->cores) {
+				if (!core->containsProcess() && !this->readyQueue.empty()) {
+					if (PagingAllocator::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					else if (PagingAllocator::getInstance()->allocate(this->readyQueue.front())) { //If memory is allocated
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					//Process reverts back to the tail of the ready queue if there is not enough space in memory
+					//TODO: Implement backing store
+					else {
+						auto frontProcess = this->readyQueue.front();
+						this->readyQueue.pop();
+						this->addProcess(frontProcess);
+					}
+				}
+				if (core->containsProcess() && core->getIsFinished()) {
+					this->finishedList.push_back(core->getProcess());
+					PagingAllocator::getInstance()->deallocate(core->getProcess()); //Remove process from memory when finished
+					core->deallocateCPU();
+					this->coresUsed--;
+				}
 			}
 		}
 	}
@@ -122,6 +156,45 @@ void FCFSScheduler::printListOfProcesses()
 void FCFSScheduler::stop()
 {
 	this->running = false;
+}
+
+int FCFSScheduler::getCoresUsed() const
+{
+	return this->coresUsed;
+}
+
+int FCFSScheduler::getNoOfCores() const
+{
+	return this->cores.size();
+}
+
+std::unordered_map<std::string, int> FCFSScheduler::getRunningProcesses() const
+{
+	std::unordered_map<std::string, int> runningProcesses;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		if (core->containsProcess()) {
+			runningProcesses[core->getProcess()->getName()] = core->getProcess()->getTotalMemoryRequired();
+		}
+	}
+	return runningProcesses;
+}
+
+int FCFSScheduler::getTotalIdleCPUTicks() const
+{
+	int totalIdleCPUTicks = 0;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		totalIdleCPUTicks += core->getIdleCPUTicks();
+	}
+	return totalIdleCPUTicks;
+}
+
+int FCFSScheduler::getTotalActiveCPUTicks() const
+{
+	int totalActiveCPUTicks = 0;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		totalActiveCPUTicks += core->getActiveCPUTicks();
+	}
+	return totalActiveCPUTicks;
 }
 
 FCFSScheduler* FCFSScheduler::getInstance()

@@ -3,8 +3,11 @@
 #include "ScreenConsole.h"
 #include "FCFSScheduler.h"
 #include "RRScheduler.h"
+#include "PagingAllocator.h"
+#include "MemoryManager.h"
 #include <memory>
 #include <thread>
+#include <random>
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 AConsole::String input;
@@ -22,6 +25,32 @@ ConsoleManager::ConsoleManager()
 	this->switchConsole(MAIN_CONSOLE);
 
 	std::cout << "constructed" << std::endl;
+}
+
+std::vector<int> ConsoleManager::getPowersOfTwo(int min, int max)
+{
+	std::vector<int> powers;
+	for (int i = 0; ; ++i) {
+		int power = 1 << i; // Equivalent to pow(2, i)
+		if (power > max) break; // Stop when the power exceeds the max
+		if (power >= min) powers.push_back(power); // Include if within range
+	}
+	return powers;
+}
+
+int ConsoleManager::getRandomPowerOfTwo(int min, int max)
+{
+	std::vector<int> powers = getPowersOfTwo(min, max);
+	if (powers.empty()) {
+		throw std::out_of_range("No powers of 2 in the specified range.");
+	}
+
+	// Random number generator
+	std::random_device rd;  // Seed generator
+	std::mt19937 gen(rd()); // Mersenne Twister engine
+	std::uniform_int_distribution<> dis(0, powers.size() - 1);
+
+	return powers[dis(gen)];
 }
 
 
@@ -60,7 +89,8 @@ void ConsoleManager::drawConsole()
 			this->exitApplication();
 		}
 		if (!mainConsole->getStringToRegister().empty()) {
-			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions, this->memoryPerProcess);
+			int processMemory = getRandomPowerOfTwo(this->minMemoryPerProcess, this->maxMemoryPerProcess);
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(mainConsole->getStringToRegister(), this->minInstructions, this->maxInstructions, processMemory, this->memPerFrame);
 			this->registerConsole(screenConsole);
 		}
 		if (!mainConsole->getStringToRead().empty()) {
@@ -83,6 +113,23 @@ void ConsoleManager::drawConsole()
 		}
 		if (mainConsole->getStopSchedulerTest()) {
 			this->endSchedulerTest();
+		}
+		if (mainConsole->getProcessSMI()) {
+			if (this->memory_allocator == "flat")
+			{
+				MemoryManager::getInstance()->process_smi();
+			}
+			else {
+				PagingAllocator::getInstance()->process_smi();
+			}
+		}
+		if (mainConsole->getVMStat()) {
+			if (this->memory_allocator == "flat") {
+				MemoryManager::getInstance()->vmstat();
+			}
+			else {
+				PagingAllocator::getInstance()->vmstat();
+			}
 		}
 	}
 	else {
@@ -169,9 +216,19 @@ void ConsoleManager::setNumRangeOfInstructions(int minInstructions, int maxInstr
 	this->maxInstructions = maxInstructions;
 }
 
-void ConsoleManager::setMemoryPerProcess(int mem_per_proc)
+void ConsoleManager::setMinMemoryPerProcess(int mem_per_proc)
 {
-	this->memoryPerProcess = mem_per_proc;
+	this->minMemoryPerProcess = mem_per_proc;
+}
+
+void ConsoleManager::setMaxMemoryPerProcess(int mem_per_proc)
+{
+	this->maxMemoryPerProcess = mem_per_proc;
+}
+
+void ConsoleManager::setMemPerFrame(int mem_per_frame)
+{
+	this->memPerFrame = mem_per_frame;
 }
 
 void ConsoleManager::setBatchProcessFrequency(int batchProcessFreq)
@@ -184,6 +241,11 @@ void ConsoleManager::setScheduler(std::string scheduler)
 	this->scheduler = scheduler;
 }
 
+void ConsoleManager::setMemoryAllocator(std::string allocator)
+{
+	this->memory_allocator = allocator;
+}
+
 void ConsoleManager::runSchedulerTest()
 {
 	this->schedulerTest = true;
@@ -192,7 +254,8 @@ void ConsoleManager::runSchedulerTest()
 	while (this->schedulerTest) {
 		if (cpuCycle % batchProcessFreq == 0) {
 			const std::string processName = "p" + std::to_string(processNameCounter);
-			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(processName, this->minInstructions, this->maxInstructions, this->memoryPerProcess);
+			int processMemory = getRandomPowerOfTwo(this->minMemoryPerProcess, this->maxMemoryPerProcess);
+			const std::shared_ptr<ScreenConsole> screenConsole = std::make_shared<ScreenConsole>(processName, this->minInstructions, this->maxInstructions, processMemory, this->memPerFrame);
 			this->registerConsoleForSchedulerTest(screenConsole);
 			processNameCounter++;
 		}

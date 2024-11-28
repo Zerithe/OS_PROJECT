@@ -35,6 +35,8 @@ void MainConsole::display()
     this->printListOfProcesses = false;
     this->startSchedulerTest = false;
     this->stopSchedulerTest = false;
+    this->process_smi = false;
+    this->vmstat = false;
     string command, option, name;
     onEnabled();
     cout << "enter a command: ";
@@ -80,6 +82,12 @@ void MainConsole::display()
     }
     else if (command == "scheduler-stop") {
         this->stopSchedulerTest = true;
+    }
+    else if (command == "process-smi") {
+        this->process_smi = true;
+    }
+    else if (command == "vmstat") {
+        this->vmstat = true;
     }
     else {
         cout << "Command not found" << endl;
@@ -143,6 +151,16 @@ bool MainConsole::getStartSchedulerTest()
 bool MainConsole::getStopSchedulerTest()
 {
     return this->stopSchedulerTest;
+}
+
+bool MainConsole::getProcessSMI()
+{
+    return this->process_smi;
+}
+
+bool MainConsole::getVMStat()
+{
+    return this->vmstat;
 }
 
 void MainConsole::headerPrint()

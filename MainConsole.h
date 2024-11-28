@@ -19,6 +19,8 @@ public:
 	bool getPrintListOfProcesses();
 	bool getStartSchedulerTest();
 	bool getStopSchedulerTest();
+	bool getProcessSMI();
+	bool getVMStat();
 
 	
 private:
@@ -29,6 +31,8 @@ private:
 	bool printListOfProcesses = false;
 	bool startSchedulerTest = false;
 	bool stopSchedulerTest = false;
+	bool process_smi = false;
+	bool vmstat = false;
 	AConsole::String stringToRegister = "";
 	AConsole::String stringToRead = "";
 };

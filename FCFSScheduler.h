@@ -4,6 +4,7 @@
 #include <memory>
 #include <queue>
 #include <iostream>
+#include <unordered_map>
 #include "Process.h"
 #include "CPUCore.h"
 class FCFSScheduler
@@ -18,6 +19,11 @@ public:
 	void showListOfProcesses();
 	void printListOfProcesses();
 	void stop();
+	int getCoresUsed() const;
+	int getNoOfCores() const;
+	std::unordered_map<std::string, int> getRunningProcesses() const;
+	int getTotalIdleCPUTicks() const;
+	int getTotalActiveCPUTicks() const;
 	static FCFSScheduler* getInstance();
 	static void initialize();
 	static void destroy();
@@ -33,5 +39,6 @@ private:
 	FinishedList finishedList;
 	bool running = true;
 	int coresUsed = 0;
+	std::string memory_allocator;
 };
 

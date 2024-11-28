@@ -3,12 +3,13 @@
 #include <fstream>
 #include <chrono>
 
-Process::Process(int pid, std::string name, int totalInstructions, int memoryRequired)
+Process::Process(int pid, std::string name, int totalInstructions, int memoryRequired, int memPerFrame)
 {
     this->pid = pid;
     this->name = name;
     this->totalInstructions = totalInstructions;
     this->memoryRequired = memoryRequired;
+    this->memPerFrame = memPerFrame;
     addCommand(ICommand::CommandType::PRINT);
 }
 
@@ -125,6 +126,11 @@ int Process::getTotalInstructions() const
 int Process::getTotalMemoryRequired() const
 {
     return this->memoryRequired;
+}
+
+int Process::getNumberOfPages() const
+{
+    return this->memoryRequired/this->memPerFrame;
 }
 
 std::string Process::getName()

@@ -4,6 +4,7 @@
 #include "ScreenConsole.h"
 #include "ConsoleManager.h"
 #include "MemoryManager.h"
+#include "PagingAllocator.h"
 #include <thread>
 #include <memory>
 #include <fstream>
@@ -17,37 +18,76 @@ RRScheduler::RRScheduler()
 
 void RRScheduler::runRR()
 {
-	while (this->running) {
-		for (std::shared_ptr<CPUCore> core : this->cores) {
-			if (!core->containsProcess() && !this->readyQueue.empty()) {
-				if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
-					core->registerProcess(this->readyQueue.front());
-					this->readyQueue.pop();
-					this->coresUsed++;
+	if (this->memory_allocator == "flat") {
+		while (this->running) {
+			for (std::shared_ptr<CPUCore> core : this->cores) {
+				if (!core->containsProcess() && !this->readyQueue.empty()) {
+					if (MemoryManager::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					else if (MemoryManager::getInstance()->findMemory(this->readyQueue.front()) >= 0) { //If there is enough space in memory
+						MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front())); //Add the process first to memory before putting in CPU/core
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					//Process reverts back to the tail of the ready queue if there is not enough space in memory
+					//TODO: Implement backing store
+					else {
+						auto frontProcess = this->readyQueue.front();
+						this->readyQueue.pop();
+						this->addProcess(frontProcess);
+					}
 				}
-				else if (MemoryManager::getInstance()->findMemory(this->readyQueue.front()) >= 0) { //If there is enough space in memory
-					MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front())); //Add the process first to memory before putting in CPU/core
-					core->registerProcess(this->readyQueue.front());
-					this->readyQueue.pop();
-					this->coresUsed++;
+				if (core->containsProcess() && core->getIsFinished()) {
+					this->finishedList.push_back(core->getProcess());
+					MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
+					core->deallocateCPU();
+					this->coresUsed--;
 				}
-				//Process reverts back to the tail of the ready queue if there is not enough space in memory
-				else { 
-					auto frontProcess = this->readyQueue.front();
-					this->readyQueue.pop();
-					this->addProcess(frontProcess);
+				if (core->containsProcess() && core->getIsPreEmpted()) {
+					this->addProcess(core->getProcess());
+					core->deallocateCPU();
+					this->coresUsed--;
 				}
 			}
-			if (core->containsProcess() && core->getIsFinished()) {
-				this->finishedList.push_back(core->getProcess());
-				MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
-				core->deallocateCPU();
-				this->coresUsed--;
-			}
-			if (core->containsProcess() && core->getIsPreEmpted()) {
-				this->addProcess(core->getProcess());
-				core->deallocateCPU();
-				this->coresUsed--;
+		}
+	}
+	else {
+		while (this->running) {
+			for (std::shared_ptr<CPUCore> core : this->cores) {
+				if (!core->containsProcess() && !this->readyQueue.empty()) {
+					if (PagingAllocator::getInstance()->isProcessInMemory(this->readyQueue.front())) { //If the process is already in memory
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					else if (PagingAllocator::getInstance()->allocate(this->readyQueue.front())) { //If memory is allocated
+						core->registerProcess(this->readyQueue.front());
+						this->readyQueue.pop();
+						this->coresUsed++;
+					}
+					//Process reverts back to the tail of the ready queue if there is not enough space in memory
+					//TODO: Implement backing store
+					else {
+						auto frontProcess = this->readyQueue.front();
+						this->readyQueue.pop();
+						this->addProcess(frontProcess);
+					}
+				}
+				if (core->containsProcess() && core->getIsFinished()) {
+					this->finishedList.push_back(core->getProcess());
+					PagingAllocator::getInstance()->deallocate(core->getProcess()); //Remove process from memory when finished
+					core->deallocateCPU();
+					this->coresUsed--;
+				}
+				if (core->containsProcess() && core->getIsPreEmpted()) {
+					this->addProcess(core->getProcess());
+					core->deallocateCPU();
+					this->coresUsed--;
+				}
 			}
 		}
 	}
@@ -127,6 +167,45 @@ void RRScheduler::printListOfProcesses()
 void RRScheduler::stop()
 {
 	this->running = false;
+}
+
+int RRScheduler::getCoresUsed() const
+{
+	return this->coresUsed;
+}
+
+int RRScheduler::getNoOfCores() const
+{
+	return this->cores.size();
+}
+
+std::unordered_map<std::string, int> RRScheduler::getRunningProcesses() const
+{
+	std::unordered_map<std::string, int> runningProcesses;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		if (core->containsProcess()) {
+			runningProcesses[core->getProcess()->getName()] = core->getProcess()->getTotalMemoryRequired();
+		}
+	}
+	return runningProcesses;
+}
+
+int RRScheduler::getTotalIdleCPUTicks() const
+{
+	int totalIdleCPUTicks = 0;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		totalIdleCPUTicks += core->getIdleCPUTicks();
+	}
+	return totalIdleCPUTicks;
+}
+
+int RRScheduler::getTotalActiveCPUTicks() const
+{
+	int totalActiveCPUTicks = 0;
+	for (std::shared_ptr<CPUCore> core : this->cores) {
+		totalActiveCPUTicks += core->getActiveCPUTicks();
+	}
+	return totalActiveCPUTicks;
 }
 
 RRScheduler* RRScheduler::getInstance()

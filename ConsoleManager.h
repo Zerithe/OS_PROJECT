@@ -31,9 +31,12 @@ public:
 	void registerConsole(std::shared_ptr<ScreenConsole> screenRef);
 	void registerConsoleForSchedulerTest(std::shared_ptr<ScreenConsole> screenRef);
 	void setNumRangeOfInstructions(int minInstructions, int maxInstructions);
-	void setMemoryPerProcess(int mem_per_proc);
+	void setMinMemoryPerProcess(int mem_per_proc);
+	void setMaxMemoryPerProcess(int mem_per_proc);
+	void setMemPerFrame(int mem_per_frame);
 	void setBatchProcessFrequency(int batchProcessFreq);
 	void setScheduler(std::string scheduler);
+	void setMemoryAllocator(std::string allocator);
 	void runSchedulerTest();
 	void endSchedulerTest();
 	bool isRunning() const;
@@ -49,6 +52,8 @@ private:
 	ConsoleManager(ConsoleManager const&) {}; //copy operator
 	ConsoleManager& operator=(ConsoleManager const&) {}; //assignment operator
 	static ConsoleManager* sharedInstance;
+	std::vector<int> getPowersOfTwo(int min, int max);
+	int getRandomPowerOfTwo(int min, int max);
 
 	ConsoleTable consoleTable;
 	std::shared_ptr<AConsole> currentConsole;
@@ -60,8 +65,11 @@ private:
 	bool schedulerTest = true;
 	int minInstructions;
 	int maxInstructions;
-	int memoryPerProcess;
+	int minMemoryPerProcess;
+	int maxMemoryPerProcess;
+	int memPerFrame;
 	int batchProcessFreq;
 	std::string scheduler;
+	std::string memory_allocator;
 };
 
