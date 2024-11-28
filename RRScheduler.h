@@ -45,4 +45,3 @@ private:
 	std::string memory_allocator;
 	bool isBackingStoreEmpty = true;
 };
-

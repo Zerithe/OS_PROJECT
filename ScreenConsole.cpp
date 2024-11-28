@@ -108,6 +108,7 @@ void ScreenConsole::printProcessData() const
 {
     cout << "Process: " << this->name << endl;
     cout << "ID: " << this->linkedProcess->getProcessID() << endl << endl;
+    cout << "Memory: " << this->linkedProcess->getTotalMemoryRequired() << endl << endl;
     if (this->linkedProcess->isFinished()) {
         cout << "Finished!" << endl;
     }

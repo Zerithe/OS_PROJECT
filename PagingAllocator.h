@@ -42,4 +42,3 @@ private:
 	int num_paged_in = 0;
 	int num_paged_out = 0;
 };
-
