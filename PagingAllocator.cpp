@@ -192,5 +192,8 @@ bool PagingAllocator::isProcessInMemory(std::shared_ptr<Process> process)
 
 std::shared_ptr<Process> PagingAllocator::getOldestProcessInMemory() const
 {
-	return processInMemoryList[0];
+	if (processInMemoryList.empty()) {
+		return nullptr; // Return nullptr if the list is empty
+	}
+	return processInMemoryList[0]; // Return the first process otherwise
 }

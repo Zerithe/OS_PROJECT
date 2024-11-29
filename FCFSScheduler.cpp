@@ -247,6 +247,16 @@ void FCFSScheduler::putProcessToBackingStore(std::shared_ptr<Process> process)
 		outfile << "commandCounter " << process->getCommandCounter() << "\n";
 		outfile.close();
 	}
+	std::ofstream outfile2("backing-store-" + process->getName() + ".txt");
+	if (outfile2.is_open()) {
+		outfile2 << "pid " << process->getProcessID() << "\n";
+		outfile2 << "processName " << process->getName() << "\n";
+		outfile2 << "totalInstructions " << process->getTotalInstructions() << "\n";
+		outfile2 << "memoryRequired " << process->getTotalMemoryRequired() << "\n";
+		outfile2 << "memPerFrame " << process->getMemPerFrame() << "\n";
+		outfile2 << "commandCounter " << process->getCommandCounter() << "\n";
+		outfile2.close();
+	}
 	this->isBackingStoreEmpty = false;
 }
 

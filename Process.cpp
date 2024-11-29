@@ -131,6 +131,8 @@ int Process::getTotalMemoryRequired() const
 
 int Process::getNumberOfPages() const
 {
+    if ((this->memoryRequired / this->memPerFrame) == 0)
+        return 1;
     return this->memoryRequired/this->memPerFrame;
 }
 

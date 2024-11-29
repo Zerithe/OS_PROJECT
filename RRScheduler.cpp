@@ -46,6 +46,9 @@ void RRScheduler::runRR()
 							if (MemoryManager::getInstance()->getOldestProcessInMemory() == cpuCore->getProcess())
 								performBackingStore = false;
 						}
+						if (MemoryManager::getInstance()->getOldestProcessInMemory()->getTotalMemoryRequired() < this->readyQueue.front()->getTotalMemoryRequired()) {
+							performBackingStore = false;
+						}
 						if (performBackingStore) {
 							this->putProcessToBackingStore(MemoryManager::getInstance()->getOldestProcessInMemory());
 							MemoryManager::getInstance()->addProcessToMemory(this->readyQueue.front(), MemoryManager::getInstance()->findMemory(this->readyQueue.front()));
@@ -56,11 +59,15 @@ void RRScheduler::runRR()
 					}
 				}
 				if (core->containsProcess() && core->getIsFinished()) {
+					bool returnProcFromBackingStore = true;
+					if (!this->isBackingStoreEmpty && (core->getProcess()->getTotalMemoryRequired() < this->getProcMemFromBackingStore())) { //if the process to be deallocated from memory has less total memory required than the process in the backing store
+						returnProcFromBackingStore = false;
+					}
 					this->finishedList.push_back(core->getProcess());
 					MemoryManager::getInstance()->deallocateProcessFromMemory(core->getProcess()); //Remove process from memory when finished
 					core->deallocateCPU();
 					this->coresUsed--;
-					if (!this->isBackingStoreEmpty)
+					if (!this->isBackingStoreEmpty && returnProcFromBackingStore)
 						this->returnProcessFromBackingStore();
 				}
 				if (core->containsProcess() && core->getIsPreEmpted()) {
@@ -68,6 +75,7 @@ void RRScheduler::runRR()
 					core->deallocateCPU();
 					this->coresUsed--;
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 		}
 	}
@@ -96,6 +104,9 @@ void RRScheduler::runRR()
 							if (PagingAllocator::getInstance()->getOldestProcessInMemory() == cpuCore->getProcess())
 								performBackingStore = false;
 						}
+						if (PagingAllocator::getInstance()->getOldestProcessInMemory() != nullptr && PagingAllocator::getInstance()->getOldestProcessInMemory()->getTotalMemoryRequired() < this->readyQueue.front()->getTotalMemoryRequired()) {
+							performBackingStore = false;
+						}
 						if (performBackingStore) {
 							this->putProcessToBackingStore(PagingAllocator::getInstance()->getOldestProcessInMemory());
 							PagingAllocator::getInstance()->allocate(this->readyQueue.front());
@@ -106,11 +117,15 @@ void RRScheduler::runRR()
 					}
 				}
 				if (core->containsProcess() && core->getIsFinished()) {
+					bool returnProcFromBackingStore = true;
+					if (!this->isBackingStoreEmpty && (core->getProcess()->getTotalMemoryRequired() < this->getProcMemFromBackingStore())) { //if the process to be deallocated from memory has less total memory required than the process in the backing store
+						returnProcFromBackingStore = false;
+					}
 					this->finishedList.push_back(core->getProcess());
 					PagingAllocator::getInstance()->deallocate(core->getProcess()); //Remove process from memory when finished
 					core->deallocateCPU();
 					this->coresUsed--;
-					if (!this->isBackingStoreEmpty)
+					if (!this->isBackingStoreEmpty && returnProcFromBackingStore)
 						this->returnProcessFromBackingStore();
 				}
 				if (core->containsProcess() && core->getIsPreEmpted()) {
@@ -118,6 +133,7 @@ void RRScheduler::runRR()
 					core->deallocateCPU();
 					this->coresUsed--;
 				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 		}
 	}
@@ -256,6 +272,16 @@ void RRScheduler::putProcessToBackingStore(std::shared_ptr<Process> process)
 		outfile << "commandCounter " << process->getCommandCounter() << "\n";
 		outfile.close();
 	}
+	std::ofstream outfile2("backing-store-" + process->getName() +".txt");
+	if (outfile2.is_open()) {
+		outfile2 << "pid " << process->getProcessID() << "\n";
+		outfile2 << "processName " << process->getName() << "\n";
+		outfile2 << "totalInstructions " << process->getTotalInstructions() << "\n";
+		outfile2 << "memoryRequired " << process->getTotalMemoryRequired() << "\n";
+		outfile2 << "memPerFrame " << process->getMemPerFrame() << "\n";
+		outfile2 << "commandCounter " << process->getCommandCounter() << "\n";
+		outfile2.close();
+	}
 	this->isBackingStoreEmpty = false;
 }
 
@@ -307,6 +333,34 @@ void RRScheduler::returnProcessFromBackingStore()
 	else
 		PagingAllocator::getInstance()->allocate(screenConsole->getProcess());
 	this->isBackingStoreEmpty = true;
+}
+
+int RRScheduler::getProcMemFromBackingStore() const
+{
+	int memoryRequired;
+	// Open the backing store text file
+	std::ifstream infile("backing-store.txt");
+
+	// Check if the file was successfully opened
+	if (!infile) {
+		std::cerr << "Unable to open backing store text file";
+	}
+
+	std::string line;
+
+	// Read the file line by line
+	while (std::getline(infile, line)) {
+		std::istringstream iss(line);
+		std::string key;
+
+		// Extract the key (before the space) and then process based on the key
+		if (line.find("memoryRequired") != std::string::npos) {
+			iss >> key >> memoryRequired;
+		}
+	}
+	// Close the file
+	infile.close();
+	return memoryRequired;
 }
 
 void RRScheduler::setMemoryAllocator(std::string mem_allocator)
